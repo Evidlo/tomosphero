@@ -209,21 +209,35 @@ class SphericalGrid:
             ax = plt.axes(projection='3d')
             ax.set_proj_type('persp')
 
-        # Make data
-        u = tr.linspace(0, 2 * tr.pi, 20)
-        v = tr.linspace(0, tr.pi, 20)
-        x = tr.outer(tr.cos(u), tr.sin(v)) * self.size.r[1]
-        y = tr.outer(tr.sin(u), tr.sin(v)) * self.size.r[1]
-        z = tr.outer(tr.ones_like(u), tr.cos(v)) * self.size.r[1]
+        artists = []
+
+        # plot outside surface
+        u = tr.linspace(*self.size.a, 20)
+        v = tr.linspace(*self.size.e, 20)
+        xo = tr.outer(tr.cos(u), tr.sin(v)) * self.size.r[1]
+        yo = tr.outer(tr.sin(u), tr.sin(v)) * self.size.r[1]
+        zo = tr.outer(tr.ones_like(u), tr.cos(v)) * self.size.r[1]
+        artists.append(ax.plot_surface(xo, yo, zo, zorder=99))
+        # plot inside surface
+        xi = tr.outer(tr.cos(u), tr.sin(v)) * self.size.r[0]
+        yi = tr.outer(tr.sin(u), tr.sin(v)) * self.size.r[0]
+        zi = tr.outer(tr.ones_like(u), tr.cos(v)) * self.size.r[0]
+        artists.append(ax.plot_surface(xi, yi, zi, zorder=99))
+        # plot upper surface
+        for i in [(0, Ellipsis), (Ellipsis, 0), (-1, Ellipsis), (Ellipsis, -1)]:
+            xs = tr.stack((xo[i], xi[i]))
+            ys = tr.stack((yo[i], yi[i]))
+            zs = tr.stack((zo[i], zi[i]))
+            artists.append(ax.plot_surface(xs, ys, zs, zorder=99))
 
         # Plot the surface
-        artist = ax.plot_surface(x, y, z, zorder=99)
+        # artist = ax.plot_surface(x, y, z, zorder=99)
         ax.set_aspect('equal')
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
 
-        return artist
+        return artists
 
     @property
     def coords(self):
