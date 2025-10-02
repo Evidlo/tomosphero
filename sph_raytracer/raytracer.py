@@ -702,7 +702,7 @@ class Operator:
         """
         r, e, a = self.regs
         # if dynamic volume density:
-        if self.grid.dynamic:
+        if self.grid.dynamic or self.dynamic:
             t = tr.arange(len(density))[:, None, None, None]
         else:
             t = Ellipsis
@@ -721,6 +721,12 @@ class Operator:
         Returns:
             density (tensor): 3D tensor of shape `grid.shape` if dynamic=False.  4D tensor
                 with first dimension equal to length of geom.shape[0] if dynamic=True
+
+        Example shapes:
+            line_integrations (20, 32, 32, 254)
+                (32, 32) detector from 20 locations with a (50, 50, 50) grid
+
+
         """
         r, e, a = self.regs
 
@@ -733,8 +739,8 @@ class Operator:
         if density.ndim == 4:
             raise NotImplementedError
         else:
-            len_sums = self.lens.sum(dim=-1, keepdim=True)
-            len_sums[len_sums==0] = 1
+            # len_sums = self.lens.sum(dim=-1, keepdim=True)
+            # len_sums[len_sums==0] = 1
             density.index_put_(
                 (r, e, a),
                 line_integrations[..., None] *

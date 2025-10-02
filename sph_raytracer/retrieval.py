@@ -23,7 +23,7 @@ def detach_loss(loss):
 
 def gd(f, y, model, coeffs=None, num_iterations=100,
        loss_fns=[SquareLoss()], optim=t.optim.Adam, optim_vars=None,
-       progress_bar=True, device=None, **kwargs
+       progress_bar=True, device=None, callbacks=[], **kwargs
        ):
     """Gradient descent to minimize loss function.  Instantiates and optimizes a set of coefficients
     for the given model with respect to provided loss functions
@@ -47,6 +47,8 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
         progress_bar (bool): show iteration count on tqdm progress bar
         device (None, str, or torch.device): optional device to use for coefficients.
             Otherwise `f.device` is used
+        callbacks (list[function]): callback functions which will be passed locals()
+            dictionary on every iteration.  Called after loss computation
         **kwargs (dict): optional optimizer arguments
 
     Returns:
@@ -105,6 +107,9 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
                     r_stat += loss
                 # log the loss
                 losses[loss_fn].append(detach_loss(loss))
+
+            for callback in callbacks:
+                callback(locals())
 
             pbar.set_description(f'F:{f_stat:.1e} R:{r_stat:.1e} O:{o_stat*100:.0f}')
 
