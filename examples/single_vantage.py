@@ -5,7 +5,7 @@
 import torch as t
 import matplotlib.pyplot as plt
 
-from sph_raytracer import SphericalGrid, ConeRectGeom, Operator
+from tomosphero import SphericalGrid, ConeRectGeom, Operator
 
 # define spherical grid and viewing geometry vantage
 grid = SphericalGrid(shape=(50, 50, 50))

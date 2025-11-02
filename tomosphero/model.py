@@ -2,7 +2,7 @@
 
 import torch as t
 
-from sph_raytracer.geometry import SphericalGrid
+from tomosphero.geometry import SphericalGrid
 
 class Model:
     """A parameterized model for a volume.  Subclass this class and provide

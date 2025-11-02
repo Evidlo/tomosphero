@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from sph_raytracer.model import *
-from sph_raytracer import SphericalGrid
+from tomosphero import *
+from tomosphero import SphericalGrid
 import torch as t
 
 def test_instantiate_models():

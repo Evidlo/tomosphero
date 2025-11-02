@@ -1,4 +1,4 @@
-# sph_raytracer
+# TomoSphero
 
 A 3D/4D volume raytracer in spherical coordinates for arbitrary detector shape implemented in PyTorch.
 
@@ -13,7 +13,8 @@ Check `examples/` for samples demonstrating forward raytracing and retrieval.
 
 ## Quickstart
 
-    pip install -e .
+    pip install tomosphero
+    git clone https://github.com/evidlo/tomosphero && cd tomosphero
     python examples/single_vantage.py
 
 <img src="example.png" height=250/>
@@ -33,8 +34,8 @@ Check `examples/` for samples demonstrating forward raytracing and retrieval.
 
 This library was uses only PyTorch array operations for implementation simplicity and speed at the expense of memory consumption.  The peak memory usage in GB can be approximated with `examples/memory_usage.py`
 
-``` python
->>> %run examples/memory_usage.py
+``` bash
+$ python examples/memory_usage.py
 
 --- Parameters ---
 
@@ -65,7 +66,7 @@ Retrieval
 
 ## Running Tests
 
-    pytest sph_raytracer
+    pytest tomosphero
     
 ## See Also
 

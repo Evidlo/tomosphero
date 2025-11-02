@@ -6,11 +6,11 @@ import torch as t
 import matplotlib.pyplot as plt
 import matplotlib
 
-from sph_raytracer import SphericalGrid, ConeRectGeom, ConeCircGeom, Operator
-from sph_raytracer.plotting import image_stack, preview3d
-from sph_raytracer.model import FullyDenseModel
-from sph_raytracer.retrieval import gd
-from sph_raytracer.loss import SquareLoss, NegRegularizer
+from tomosphero import SphericalGrid, ConeRectGeom, ConeCircGeom, Operator
+from tomosphero.plotting import image_stack, preview3d
+from tomosphero.model import FullyDenseModel
+from tomosphero.retrieval import gd
+from tomosphero.loss import SquareLoss, NegRegularizer
 
 # ----- Setup -----
 
@@ -50,7 +50,7 @@ meas = op(x)
 # ----- Plotting -----
 # %% plot
 
-from sph_raytracer.plotting import preview3d, image_stack, color_negative
+from tomosphero.plotting import preview3d, image_stack, color_negative
 import matplotlib.pyplot as plt
 import matplotlib
 plt.close('all')

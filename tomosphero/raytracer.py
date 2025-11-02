@@ -787,7 +787,7 @@ class Operator:
             ax = fig.add_subplot(projection='3d', computed_zorder=False)
 
         if plot_grid:
-            grid.plot(ax)
+            grid.plot(ax=ax)
 
         # draw path
         if (pos := geom.pos) is not None and plot_path:
