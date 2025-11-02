@@ -30,6 +30,12 @@
     <li><a href="#running-tests">Running Tests</a></li>
     <li><a href="#see-also">See Also</a></li>
   </ul></li>
+  <li><a href="#constructing-spherical-grids">Constructing Spherical Grids</a></li>
+  <li><a href="#constructing-view-geometries">Constructing View Geometries</a>
+  <ul>
+    <li><a href="#built-in-geometries">Built-In Geometries</a></li>
+    <li><a href="#custom-geometries">Custom Geometries</a></li>
+  </ul></li>
 </ul>
 
 
@@ -106,17 +112,17 @@ python examples/single_vantage.py
 <p>This library was uses only PyTorch array operations for implementation simplicity and speed at the expense of memory consumption.  The peak memory usage in GB can be approximated with <code>examples/memory_usage.py</code></p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="o">%</span><span class="n">run</span> <span class="n">examples</span><span class="o">/</span><span class="n">memory_usage</span><span class="o">.</span><span class="n">py</span>
+<pre><span></span><code>$<span class="w"> </span>python<span class="w"> </span>examples/memory_usage.py
 
-<span class="o">---</span> <span class="n">Parameters</span> <span class="o">---</span>
+---<span class="w"> </span>Parameters<span class="w"> </span>---
 
-<span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="n">volume</span>
-<span class="mi">50</span> <span class="n">observations</span><span class="p">,</span> <span class="mi">1</span> <span class="n">channels</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="n">sensor</span>
+<span class="o">(</span><span class="m">50</span>,<span class="w"> </span><span class="m">50</span>,<span class="w"> </span><span class="m">50</span><span class="o">)</span><span class="w"> </span>volume
+<span class="m">50</span><span class="w"> </span>observations,<span class="w"> </span><span class="m">1</span><span class="w"> </span>channels,<span class="w"> </span><span class="o">(</span><span class="m">50</span>,<span class="w"> </span><span class="m">100</span><span class="o">)</span><span class="w"> </span>sensor
 
-<span class="o">---</span> <span class="n">Memory</span> <span class="n">Usage</span> <span class="o">---</span>
+---<span class="w"> </span>Memory<span class="w"> </span>Usage<span class="w"> </span>---
 
-<span class="n">Ray</span> <span class="n">coordinates</span> <span class="n">memory</span><span class="p">:</span> <span class="mf">4.25</span> <span class="n">GB</span>
-<span class="n">Volume</span> <span class="n">memory</span><span class="p">:</span> <span class="mf">0.05</span> <span class="n">GB</span>
+Ray<span class="w"> </span>coordinates<span class="w"> </span>memory:<span class="w"> </span><span class="m">4</span>.25<span class="w"> </span>GB
+Volume<span class="w"> </span>memory:<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span>GB
 </code></pre>
 </div>
 
@@ -148,6 +154,14 @@ python examples/single_vantage.py
 <h2 id="see-also">See Also</h2>
 
 <p><a href="https://github.com/ahendriksen/tomosipo">tomosipo</a>, which inspired parts of this library's interface.</p>
+
+<h1 id="constructing-spherical-grids">Constructing Spherical Grids</h1>
+
+<h1 id="constructing-view-geometries">Constructing View Geometries</h1>
+
+<h2 id="built-in-geometries">Built-In Geometries</h2>
+
+<h2 id="custom-geometries">Custom Geometries</h2>
 </div>
 
                         <input id="mod-tomosphero-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
@@ -156,11 +170,12 @@ python examples/single_vantage.py
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">2</span></a><span class="sd">.. include:: ../README.md</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos">5</span></a><span class="kn">from</span> <span class="nn">.raytracer</span> <span class="kn">import</span> <span class="n">Operator</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos">6</span></a><span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="o">*</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos">7</span></a><span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="sd">.. include:: ../TUTORIAL.md</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">6</span></a><span class="kn">from</span> <span class="nn">.raytracer</span> <span class="kn">import</span> <span class="n">Operator</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">7</span></a><span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">8</span></a><span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="o">*</span>
 </span></pre></div>
 
 
