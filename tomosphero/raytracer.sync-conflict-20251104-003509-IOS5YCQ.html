@@ -850,7 +850,7 @@
 </span><span id="L-701"><a href="#L-701"><span class="linenos">701</span></a><span class="sd">            line_integrations (tensor): integrated lines of sight of shape `geom.shape`</span>
 </span><span id="L-702"><a href="#L-702"><span class="linenos">702</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="L-703"><a href="#L-703"><span class="linenos">703</span></a>        <span class="n">r</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regs</span>
-</span><span id="L-704"><a href="#L-704"><span class="linenos">704</span></a>        <span class="c1"># if dynamic object:</span>
+</span><span id="L-704"><a href="#L-704"><span class="linenos">704</span></a>        <span class="c1"># if dynamic volume density:</span>
 </span><span id="L-705"><a href="#L-705"><span class="linenos">705</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">dynamic</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamic</span><span class="p">:</span>
 </span><span id="L-706"><a href="#L-706"><span class="linenos">706</span></a>            <span class="n">t</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">density</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 </span><span id="L-707"><a href="#L-707"><span class="linenos">707</span></a>        <span class="k">else</span><span class="p">:</span>
@@ -1044,7 +1044,7 @@
                 <section id="forward_fill_jit">
                     <div class="attr variable">
             <span class="name">forward_fill_jit</span>        =
-<span class="default_value">&lt;torch.jit.ScriptFunction object&gt;</span>
+<span class="default_value">&lt;torch.jit.torch.jit.ScriptFunction object&gt;</span>
 
         
     </div>
@@ -2042,7 +2042,7 @@ azimuth is measured from X-axis in radians [-ℼ, ℼ]</li>
 </span><span id="Operator-702"><a href="#Operator-702"><span class="linenos">702</span></a><span class="sd">            line_integrations (tensor): integrated lines of sight of shape `geom.shape`</span>
 </span><span id="Operator-703"><a href="#Operator-703"><span class="linenos">703</span></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="Operator-704"><a href="#Operator-704"><span class="linenos">704</span></a>        <span class="n">r</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regs</span>
-</span><span id="Operator-705"><a href="#Operator-705"><span class="linenos">705</span></a>        <span class="c1"># if dynamic object:</span>
+</span><span id="Operator-705"><a href="#Operator-705"><span class="linenos">705</span></a>        <span class="c1"># if dynamic volume density:</span>
 </span><span id="Operator-706"><a href="#Operator-706"><span class="linenos">706</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">dynamic</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamic</span><span class="p">:</span>
 </span><span id="Operator-707"><a href="#Operator-707"><span class="linenos">707</span></a>            <span class="n">t</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">density</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 </span><span id="Operator-708"><a href="#Operator-708"><span class="linenos">708</span></a>        <span class="k">else</span><span class="p">:</span>
