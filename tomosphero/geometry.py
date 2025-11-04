@@ -58,11 +58,11 @@ class SphericalGrid:
         r (tensor[float]): radial bin centers
         e (tensor[float]): elevation bin centers
         a (tensor[float]): azimuth bin centers
-        r_b (tensor[float])
-        e_b (tensor[float])
-        a_b (tensor[float])
-        size (tuple[tuple[float]])
-        timeunit (str)
+        r_b (tensor[float]): radial bin boundaries
+        e_b (tensor[float]): elevational bin boundaries
+        a_b (tensor[float]): azimuthal bin boundaries
+        size (tuple[tuple[float]]): temporal/spatial extent
+        timeunit (str): units of time dimension (numpy timeunits)
         dynamic (bool): whether grid is dynamic
 
     Usage:
@@ -77,31 +77,33 @@ class SphericalGrid:
     Below is an illustration of where grid indices are located relative to
     voxel indices for a volume of shape (T, 2, 2, 4)
 
-             .....
+    ``` text
+                .....
 
-          Radial (r)              Elevation (e)           Azimuth (a)
-          ----------              ---------------           ---------------
-                                         Z↑                        Y↑
-   ..........* 2 *...........
-   ........*       *.........
-   ......*           *.......       0.........0             ..4         3
-   ....*     **1**     *.....        \..-1.../              ...\   3   /
-   ...*    *       *    *....         \...../               ....\     /
-   ..*    *   *0*   *    *...       0  \.../  0             .....\   /  2
-   ..*   *   *...*   *   *...           \./                 ..5...\ /
-   ..*   *   *-1.* 0 * 1 *.2.    1-------+-------1  X→      .......+-------2   X→
-   ..*   *   *...*   *   *...           /.\                 .-1.../ \
-   ..*    *   ***   *    *...       1  /...\  1             ...../   \  1
-   ...*    *       *    *....         /.....\               ..../     \
-   ....*     *****     *.....        /...2...\              .../   0   \
-   ......*           *.......       2.........2             ..0         1
-   ........*       *.........
-   ..........*****...........
+            Radial (r)              Elevation (e)           Azimuth (a)
+            ----------              ---------------           ---------------
+                                            Z↑                        Y↑
+    ..........* 2 *...........
+    ........*       *.........
+    ......*           *.......       0.........0             ..4         3
+    ....*     **1**     *.....        \..-1.../              ...\   3   /
+    ...*    *       *    *....         \...../               ....\     /
+    ..*    *   *0*   *    *...       0  \.../  0             .....\   /  2
+    ..*   *   *...*   *   *...           \./                 ..5...\ /
+    ..*   *   *-1.* 0 * 1 *.2.    1-------+-------1  X→      .......+-------2   X→
+    ..*   *   *...*   *   *...           /.\                 .-1.../ \
+    ..*    *   ***   *    *...       1  /...\  1             ...../   \  1
+    ...*    *       *    *....         /.....\               ..../     \
+    ....*     *****     *.....        /...2...\              .../   0   \
+    ......*           *.......       2.........2             ..0         1
+    ........*       *.........
+    ..........*****...........
 
-                              ....
-                              .... out of bounds voxels
-                              ....
+                                ....
+                                .... out of bounds voxels
+                                ....
 
+    ```
     """
 
     def __init__(

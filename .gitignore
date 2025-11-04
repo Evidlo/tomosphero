@@ -16,3 +16,4 @@ example.png
 examples/*png
 examples/*gif
 **/.*json
+docs/
