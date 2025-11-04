@@ -4,9 +4,9 @@ This tutorial will walk through the process of setting up a tomography problem a
 
 The tutorial consists of four parts:
 
-1. Construct a spherical grid that defines problem domain
-2. Construct view geometry which defines measurements
-3. Combine grid and view geometry into an operator and generate synthetic measurements of an object
+1. Construct a spherical grid that defines the object domain
+2. Construct view geometry which defines measurement LOS
+3. Combine grid and view geometry into an operator and take measurements
 4. Reconstruct object with iterative algorithm
 
 Let's get started! 🮲🮳

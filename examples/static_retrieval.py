@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Evan Widloski - 2024-04-10
-# Demonstration of tomographic retrieval of a static volume
+# Demonstration of tomographic retrieval of a static object
 
 import torch as t
 import matplotlib.pyplot as plt
@@ -14,10 +14,10 @@ from tomosphero.loss import SquareLoss, NegRegularizer
 
 # ----- Setup -----
 
-# define volume grid.  Grid spacing may be customized but are left default here
+# define grid.  Grid spacing may be customized but are left default here
 grid = SphericalGrid(shape=(50, 50, 50))
 
-# generate a simple static test volume with two nested shells
+# generate a simple static test object with two nested shells
 # to run on CPU, use device='cpu'
 x = t.zeros(grid.shape, device='cuda')
 x[:, 25:, :25] = 1

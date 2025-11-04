@@ -39,13 +39,13 @@ $ python examples/memory_usage.py
 
 --- Parameters ---
 
-(50, 50, 50) volume
+(50, 50, 50) object
 50 observations, 1 channels, (50, 100) sensor
 
 --- Memory Usage ---
 
 Ray coordinates memory: 4.25 GB
-Volume memory: 0.05 GB
+Object memory: 0.05 GB
 ```
 
 ## Architecture

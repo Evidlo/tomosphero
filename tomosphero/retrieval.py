@@ -34,7 +34,7 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
     Use Ctrl-C to stop iterations early and return best result so far.
 
     Args:
-        f (Forward): forward operator with pytorch autograd support
+        f (Operator): forward operator with pytorch autograd support
         y (tensor): measurement stack
         model (science.model.Model): initialized model
         coeffs (tensor): initial value of coeffs before optimizing.

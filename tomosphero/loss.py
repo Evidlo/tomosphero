@@ -16,7 +16,7 @@ class Loss:
 
     Args:
         projection_mask (tensor): column densities to mask out when computing loss
-        volume_mask (tensor): voxels to mask out when computing loss
+        obj_mask (tensor): voxels to mask out when computing loss
         lam (float): loss function scaling
         use_grad (bool): whether this loss function's gradient needs to be used in optimization
 
@@ -24,14 +24,16 @@ class Loss:
         gd(..., losses=[5 * MyLoss(), 3 * MyLoss2()], ...)
     """
 
+    # Category of loss - one of either 'fidelity', 'regularizer', or 'oracle'.
+    # Used by `loss_plot(…)` and `gd(…)` status bar when displaying several loss terms
     kind = 'regularizer'
 
     def __init__(
-            self, *args, projection_mask=1, volume_mask=1, lam=1,
+            self, *args, projection_mask=1, obj_mask=1, lam=1,
             use_grad=True, **kwargs
         ):
         self.projection_mask = projection_mask
-        self.volume_mask = volume_mask
+        self.obj_mask = obj_mask
         self.lam = lam
         self.use_grad = use_grad
 
@@ -39,10 +41,10 @@ class Loss:
         """Compute loss
 
         Args:
-            f (Forward): forward function. density→projections
+            f (Operator): forward function. density→projections
             y (tensor): measurements.  shape must match `projection_mask`
             d (tensor): density to pass through forward function.
-                shape must match `volume_mask`
+                shape must match `obj_mask`
             c (tensor): coefficients of shape model.coeffs_shape
 
         Returns:
@@ -54,10 +56,10 @@ class Loss:
         """Compute loss, incorporating loss weight and whether pytorch grad is needed
 
         Args:
-            f (Forward): forward function. density→projections
+            f (Operator): forward function. density→projections
             y (tensor): measurements.  shape must match `projection_mask`
             d (tensor): density to pass through forward function.
-                shape must match `volume_mask`
+                shape must match `obj_mask`
             c (tensor): coefficients of shape model.coeffs_shape
 
         Returns:
@@ -91,7 +93,7 @@ class SquareLoss(Loss):
 
     def compute(self, f, y, d, c):
         """"""
-        result = t.mean(self.projection_mask * (y - f(d * self.volume_mask))**2)
+        result = t.mean(self.projection_mask * (y - f(d * self.obj_mask))**2)
         return result
 
 
@@ -102,7 +104,7 @@ class SquareRelLoss(Loss):
 
     def compute(self, f, y, d, c):
         """"""
-        obs = f(d * self.volume_mask)
+        obs = f(d * self.obj_mask)
 
         # rel_err = (y - obs) / y
         # rel_err = rel_err.nan_to_num() * self.projection_mask
@@ -121,7 +123,7 @@ class AbsLoss(Loss):
 
     def compute(self, f, y, d, c):
         """"""
-        result = t.mean(self.projection_mask * (y - f(d * self.volume_mask)).abs())
+        result = t.mean(self.projection_mask * (y - f(d * self.obj_mask)).abs())
         return result
 
 
@@ -144,7 +146,7 @@ class CheaterLoss(Loss):
 
     def compute(self, f, y, d, c):
         """"""
-        return t.mean(self.volume_mask * (d - self.density_truth)**2)
+        return t.mean(self.obj_mask * (d - self.density_truth)**2)
 
 
 class NegRegularizer(Loss):
@@ -152,11 +154,11 @@ class NegRegularizer(Loss):
 
     def compute(self, f, y, d, c):
         """"""
-        return t.mean(t.abs(self.volume_mask * d.clip(max=0)))
+        return t.mean(t.abs(self.obj_mask * d.clip(max=0)))
 
 
 class NegSumRegularizer(Loss):
     """Sum of negative voxels"""
     def compute(self, f, y, d, c):
         """"""
-        return t.sum(t.abs(self.volume_mask * d.clip(max=0)))
+        return t.sum(t.abs(self.obj_mask * d.clip(max=0)))

@@ -2,7 +2,7 @@
 
 This modules contains classes for fully specifying the geometry of a tomographic operator.
 
-SphericalGrid defines the shape and extent of the volume being raytraced, and ViewGeom (and its children)
+SphericalGrid defines the shape and extent of the object being raytraced, and ViewGeom (and its children)
 define the shape, position, and orientation of the detector for each measurement.
 
 The user may fully specify pixel lines-of-sight of custom detector with ViewGeom, or can use ConeCircGeom/ConeRectGeom
@@ -27,7 +27,7 @@ FTYPE = tr.float64
 class SphericalGrid:
     r"""Spherical grid information
 
-    This class specifies the physical geometry of the volume being raytraced.
+    This class specifies the physical geometry of the object being raytraced.
 
     The grid may be specified either by providing a shape and size of the grid,
     or by manually specifying the locations of all voxels.
@@ -75,7 +75,7 @@ class SphericalGrid:
         )
 
     Below is an illustration of where grid indices are located relative to
-    voxel indices for a volume of shape (T, 2, 2, 4)
+    voxel indices for a object of shape (T, 2, 2, 4)
 
     ``` text
                 .....
@@ -115,7 +115,7 @@ class SphericalGrid:
             # FIXME: deprecated args
             rs_b=None, phis_b=None, thetas_b=None):
 
-        # static volume
+        # static object
         if len(shape) == 3:
             size = StaticSize(size_r, size_e, size_a)
             shape = StaticShape(*shape[-3:])

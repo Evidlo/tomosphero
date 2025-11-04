@@ -55,9 +55,9 @@ def test_operator_static():
     geom = ViewGeom([-100, 0, 0], [1, 0, 0])
     grid = SphericalGrid(shape=(25, 25, 25), size_r=(5, 10))
     op = Operator(grid, geom)
-    # trace multidimensional static volume
+    # trace multidimensional static object
     result = op(tr.rand((5,) + grid.shape))
-    assert result.shape == (5,), "Incorrect shape for multi-channel volume"
+    assert result.shape == (5,), "Incorrect shape for multi-channel object"
 
 
 # check operator result shapes under various conditions

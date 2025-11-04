@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Evan Widloski - 2024-04-10
-# Demonstration of tomographic measurements of a dynamic volume
+# Demonstration of tomographic measurements of a dynamic object
 
 import torch as t
 import matplotlib.pyplot as plt
@@ -14,10 +14,10 @@ from tomosphero.loss import SquareLoss, NegRegularizer
 
 # ----- Setup -----
 
-# define volume grid.  Grid spacing may be customized but are left default here
+# define grid.  Grid spacing may be customized but are left default here
 grid = SphericalGrid(shape=(20, 50, 50, 50))
 
-# generate a simple static test volume with two nested shells
+# generate a simple static test object with two nested shells
 # to run on CPU, use device='cpu'
 x = t.zeros(grid.shape, device='cuda')
 x[:, :, 25:, :25] = 1
@@ -65,7 +65,7 @@ ax3 = fig.add_subplot(1, 3, 3, polar=True)
 
 # generate rotating 4D preview of ground truth
 ani1 = image_stack(preview3d(x, grid, azim=-45, orbit=False), ax=ax1)
-ax1.set_title("Dynamic Volume Preview")
+ax1.set_title("Dynamic Object Preview")
 
 # generate a 3D wireframe animation of viewing geometries
 ax2.set_title('View Geometry')

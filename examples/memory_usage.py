@@ -7,7 +7,7 @@ import numpy as np
 npix1 = 512
 npix2 = 512
 
-# volume size
+# obj size
 ntime = 1
 nrad = 32
 nele = 16
@@ -17,8 +17,8 @@ nazi = 32
 nobs = 25
 nchan = 2 # (e.g. multiple detectors in a spacecraft)
 
-volume = (ntime, nrad, nazi, nele)
-volume_size = 8 * np.prod(volume) / 1e9 # dynamic volume
+obj = (ntime, nrad, nazi, nele)
+obj_size = 8 * np.prod(obj) / 1e9 # dynamic object
 
 # max number of voxels intersecting a ray
 nvox_ray = 2 * (nrad + 1) + 2 * (nele + 1) + (nazi + 1)
@@ -28,10 +28,10 @@ indices_dtype = 8 # integer dtype
 # intersection lengths of intersecting voxels for each ray
 lens = (nchan, nobs, npix1, npix2, nvox_ray)
 lens_dtype = 8 # float dtype
-# volume voxel values along each ray
+# object voxel values along each ray
 values = (nchan, nobs, npix1, npix2, nvox_ray)
 values_dtype = 8 # float dtype
-# volume values after sorting
+# object values after sorting
 aftersort = values
 aftersort_dtype = values_dtype # float dtype
 
@@ -44,8 +44,8 @@ static_size = (
 ) / 1e9
 
 print('\n--- Parameters ---\n')
-print(f'({nrad}, {nele}, {nazi}) volume')
+print(f'({nrad}, {nele}, {nazi}) object')
 print(f'{nobs} observations, {nchan} channels, ({npix1}, {npix2}) sensor')
 print('\n--- Memory Usage ---\n')
 print('Ray coordinates memory:', static_size, 'GB')
-print('Volume memory:', volume_size, 'GB')
+print('Object memory:', obj_size, 'GB')

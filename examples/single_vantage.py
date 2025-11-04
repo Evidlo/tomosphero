@@ -20,13 +20,13 @@ geom = ConeRectGeom(
 # to run on CPU, use device='cpu'
 op = Operator(grid, geom, device='cuda')
 
-# generate a simple static test volume with two nested shells
+# generate a simple static test object with two nested shells
 # to run on CPU, use device='cpu'
 x = t.zeros(grid.shape, device=op.device)
 x[-1, :, :] += 1
 x[-10, :, :] += 1
 
-# raytrace over the volume
+# raytrace over the object
 result = op(x)
 
 # ----- Plotting -----

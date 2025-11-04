@@ -701,7 +701,7 @@ class Operator:
             line_integrations (tensor): integrated lines of sight of shape `geom.shape`
         """
         r, e, a = self.regs
-        # if dynamic volume density:
+        # if dynamic object:
         if self.grid.dynamic or self.dynamic:
             t = tr.arange(len(density))[:, None, None, None]
         else:
