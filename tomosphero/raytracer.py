@@ -63,9 +63,9 @@ def trace_indices(grid, xs, rays, ftype=FTYPE, itype=ITYPE, device=DEVICE,
         debug_los (tuple, None): choose LOS to debug
 
     Returns:
-        inds (tensor[int]): voxel indices of every voxel that ray intersects with
+        - inds (tensor[int]): voxel indices of every voxel that ray intersects with
             (3, *num_rays, max_int_voxels)
-        lens (tensor[float]): intersection length of each voxel with ray's path
+        - lens (tensor[float]): intersection length of each voxel with ray's path
             (*num_rays, max_int_voxels)
 
 
@@ -257,13 +257,13 @@ def r_torch(r, xs, rays, ftype=FTYPE, itype=ITYPE, device=DEVICE):
         device (str): torch device
 
     Returns:
-        t (tensor): distance of each point from x along ray
+        - t (tensor): distance of each point from x along ray
             (*num_rays, 2 * num_spheres).  Can be negative or inf
-        regions (tensor[int]): region index associated with each point
+        - regions (tensor[int]): region index associated with each point
             (*num_rays, num_spheres).
-        inds (tensor[int]): geometry index that the point lies on
+        - inds (tensor[int]): geometry index that the point lies on
             (*num_rays, 2 * num_spheres)
-        negative_crossing (tensor[int]): whether ray crosses geometry in
+        - negative_crossing (tensor[int]): whether ray crosses geometry in
             positive or negative direction (*num_rays, 2 * num_spheres)
 
     Ref: https://kylehalladay.com/blog/tutorial/math/2013/12/24/Ray-Sphere-Intersection.html
@@ -338,13 +338,13 @@ def e_torch(e, xs, rays, ftype=FTYPE, itype=ITYPE, device=DEVICE):
         device (str): torch device
 
     Returns:
-        t (tensor): distance of each point from x along ray
+        - t (tensor): distance of each point from x along ray
             (*num_rays, 2 * num_cones).  Can be negative or inf
-        regions (tensor[int]): region index associated with each point
+        - regions (tensor[int]): region index associated with each point
             (*num_rays, 2 * num_cones).
-        inds (tensor[int]): geometry index that the point lies on
+        - inds (tensor[int]): geometry index that the point lies on
             (*num_rays, 2 * num_cones)
-        negative_crossing (tensor[int]): whether ray crosses geometry in
+        - negative_crossing (tensor[int]): whether ray crosses geometry in
             positive or negative direction (*num_rays, 2 * num_cones)
 
     Ref: http://lousodrome.net/blog/light/2017/01/03/intersection-of-a-ray-and-a-cone/
@@ -480,13 +480,13 @@ def a_torch(a_b, xs, rays, ftype=FTYPE, itype=ITYPE, device=DEVICE):
         device (str): torch device
 
     Returns:
-        t (tensor): distance of each point from x along ray
+        - t (tensor): distance of each point from x along ray
             (*num_rays, num_planes).  Can be negative or inf
-        regions (tensor[int]): region index associated with each point
+        - regions (tensor[int]): region index associated with each point
             (*num_rays, num_planes).
-        inds (tensor[int]): geometry index that the point lies on
+        - inds (tensor[int]): geometry index that the point lies on
             (*num_rays, num_planes)
-        negative_crossing (tensor[int]): whether ray crosses geometry in
+        - negative_crossing (tensor[int]): whether ray crosses geometry in
             positive or negative direction (*num_rays, num_planes)
 
     """
@@ -663,6 +663,7 @@ class Operator:
                  ftype=FTYPE, itype=ITYPE, device=DEVICE, pdevice=PDEVICE,
                  debug=False, debug_los=None, invalid=False,
                  _compute=True):
+        """@private"""
         self.grid = grid
         self.geom = geom
         if dynamic is None:
@@ -771,7 +772,7 @@ class Operator:
             plot_grid (bool): plot grid
 
         Returns:
-            matplotlib Animation if dynamic density or multiple vantages
+            matplotlib Animation if dynamic density or multiple vantages or
             matplotlib Axes if static density and single vantage
         """
 

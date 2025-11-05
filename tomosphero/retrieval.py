@@ -29,6 +29,7 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
     for the given model with respect to provided loss functions
 
     Minimizes sum of weighted loss functions with respect to model coefficients:
+
     e.g. `loss_fn1(f, y, d, coeffs) + loss_fn2(f, y, d, coeffs) + ...`
 
     Use Ctrl-C to stop iterations early and return best result so far.
@@ -36,18 +37,19 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
     Args:
         f (Operator): forward operator with pytorch autograd support
         y (tensor): measurement stack
-        model (science.model.Model): initialized model
-        coeffs (tensor): initial value of coeffs before optimizing.
+        model (tomosphero.model.Model): initialized model
+        coeffs (tensor, optional): optional, initial value of coeffs before optimizing.
             should have `requires_grad=True`.  defaults to `t.ones(model.coeffs_shape)`
         num_iterations (int): number of gradient descent iterations
         loss_fns (list[science.Loss]): custom loss functions which
             accept (f, y, density, coeffs) as args.  Losses are summed
-        optim (pytorch Optimizer): optimizer.  optional.  defaults to 'Adam'
-        optim_vars (list[tensor]): list of variables to optimize
-        progress_bar (bool): show iteration count on tqdm progress bar
-        device (None, str, or torch.device): optional device to use for coefficients.
+        optim (pytorch Optimizer, optional): optimizer.  optional.  defaults to 'Adam'
+        optim_vars (list[tensor], optional): list of variables to optimize. defaults to
+            internal `coeffs`
+        progress_bar (bool, optional): show iteration count on tqdm progress bar
+        device (None, str, or torch.device, optional): optional device to use for coefficients.
             Otherwise `f.device` is used
-        callbacks (list[function]): callback functions which will be passed locals()
+        callbacks (list[function], optional): callback functions which will be passed locals()
             dictionary on every iteration.  Called after loss computation
         **kwargs (dict): optional optimizer arguments
 

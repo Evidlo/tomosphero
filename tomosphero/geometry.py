@@ -13,8 +13,8 @@ from collections import namedtuple
 import math
 import torch as tr
 
-__all__ = ['SphericalGrid', 'ConeRectGeom', 'ConeCircGeom',
-           'ViewGeomCollection', 'ViewGeom', 'ParallelGeom'
+__all__ = ['SphericalGrid', 'ViewGeom', 'ConeRectGeom', 'ConeCircGeom',
+           'ParallelGeom', 'ViewGeomCollection',
            ]
 
 StaticSize = namedtuple('Size', ['r', 'e', 'a'])
@@ -53,7 +53,7 @@ class SphericalGrid:
             Useful when converting grid time bins back to e.g. np.datetime64
 
     Attributes:
-        shape (tuple[int])
+        shape (tuple[int]): shape of the grid
         t (tensor[int]): sample times
         r (tensor[float]): radial bin centers
         e (tensor[float]): elevation bin centers
@@ -66,6 +66,7 @@ class SphericalGrid:
         dynamic (bool): whether grid is dynamic
 
     Usage:
+    ``` python
         SphericalGrid((0, 1), (3, 25), (0, tr.pi), (-tr.pi, tr.pi), (10, 50, 50, 50))
         SphericalGrid(
             t=tr.linspace(0, 1, 10)
@@ -73,28 +74,28 @@ class SphericalGrid:
             e_b=tr.linspace(0, tr.pi, 51),
             a_b=tr.linspace(-tr.pi, tr.pi, 51)
         )
+    ```
 
     Below is an illustration of where grid indices are located relative to
     voxel indices for a object of shape (T, 2, 2, 4)
 
     ``` text
-                .....
 
             Radial (r)              Elevation (e)           Azimuth (a)
-            ----------              ---------------           ---------------
+            ----------              ---------------         ---------------
                                             Z↑                        Y↑
-    ..........* 2 *...........
+    ..........**2**...........
     ........*       *.........
     ......*           *.......       0.........0             ..4         3
-    ....*     **1**     *.....        \..-1.../              ...\   3   /
-    ...*    *       *    *....         \...../               ....\     /
-    ..*    *   *0*   *    *...       0  \.../  0             .....\   /  2
-    ..*   *   *...*   *   *...           \./                 ..5...\ /
-    ..*   *   *-1.* 0 * 1 *.2.    1-------+-------1  X→      .......+-------2   X→
-    ..*   *   *...*   *   *...           /.\                 .-1.../ \
-    ..*    *   ***   *    *...       1  /...\  1             ...../   \  1
-    ...*    *       *    *....         /.....\               ..../     \
-    ....*     *****     *.....        /...2...\              .../   0   \
+    ....*     **1**     *.....        *..-1...*              ...*   3   *
+    ...*    *       *    *....         *.....*               ....*     *
+    ..*    *   *0*   *    *...       0  *...*  0             .....*   *  2
+    ..*   *   *...*   *   *...           *.*                 ..5...* *
+    ..*   *   *-1.* 0 * 1 *.2.    1*******+*******1  X→      .......+*******2   X→
+    ..*   *   *...*   *   *...           *.*                 .-1...* *
+    ..*    *   ***   *    *...       1  *...*  1             .....*   *  1
+    ...*    *       *    *....         *.....*               ....*     *
+    ....*     *****     *.....        *...2...*              ...*   0   *
     ......*           *.......       2.........2             ..0         1
     ........*       *.........
     ..........*****...........
@@ -114,16 +115,17 @@ class SphericalGrid:
             timeunit='s',
             # FIXME: deprecated args
             rs_b=None, phis_b=None, thetas_b=None):
+        """@private"""
 
         # static object
         if len(shape) == 3:
             size = StaticSize(size_r, size_e, size_a)
             shape = StaticShape(*shape[-3:])
-            self.dynamic = False
+            dynamic = False
         elif len(shape) == 4:
             size = DynamicSize(size_t, size_r, size_e, size_a)
             shape = DynamicShape(*shape)
-            self.dynamic = True
+            dynamic = True
         else:
             raise ValueError("shape must be 3D or 4D")
 
@@ -145,7 +147,7 @@ class SphericalGrid:
                 t = tr.asarray(t, dtype=tr.float64)
                 shape = DynamicShape(len(t), len(r_b) - 1, len(e_b) - 1, len(a_b) - 1)
                 size = DynamicSize(size_t, size_r, size_e, size_a)
-                self.dynamic = True
+                dynamic = True
 
 
             # enforce float64 dtype
@@ -173,12 +175,31 @@ class SphericalGrid:
             raise ValueError("Must specify either shape or (r, e, a)")
 
 
+        self.dynamic = dynamic
+        """dynamic (bool): whether grid is dynamic"""
         self.size = size
+        """size (tuple[tuple[float]]): temporal/spatial extent"""
         self.shape = shape
+        """(tuple[int]): shape of the grid"""
         self.spacing = spacing
-        self.r_b, self.e_b, self.a_b = r_b, e_b, a_b
-        self.t, self.r, self.e, self.a = t, r, e, a
+        # self.r_b, self.e_b, self.a_b = r_b, e_b, a_b
+        # self.t, self.r, self.e, self.a = t, r, e, a
+        self.r_b = r_b
+        """r_b (tensor[float]): radial bin boundaries"""
+        self.e_b = e_b
+        """e_b (tensor[float]): elevational bin boundaries"""
+        self.a_b = a_b
+        """a_b (tensor[float]): azimuthal bin boundaries"""
+        self.t = t
+        """t (tensor[int]): sample times"""
+        self.r = r
+        """r (tensor[float]): radial bin centers"""
+        self.e = e
+        """e (tensor[float]): elevation bin centers"""
+        self.a = a
+        """a (tensor[float]): azimuth bin centers"""
         self.timeunit = timeunit
+        """timeunit (str): units of time dimension (numpy timeunits)"""
 
         # FIXME: deleteme, deprecated args
         self.rs_b, self.phis_b, self.thetas_b = r_b, e_b, a_b
@@ -242,7 +263,7 @@ class SphericalGrid:
         return artists
 
     @property
-    def coords(self):
+    def coords(self) -> dict[str, tr.Tensor]:
         """"""
         if self.dynamic:
             return {'t':self.t, 'r':self.r, 'e':self.e, 'a':self.a}
@@ -293,11 +314,10 @@ class ViewGeom:
         rays (tensor):
         shape (tuple): Shape of the detector (excluding last dimension of provided rays)
 
-    Usage:
-
     """
 
     def __init__(self, ray_starts, rays):
+        """@private"""
         self.ray_starts = tr.asarray(ray_starts, dtype=FTYPE)
         self.rays = tr.asarray(rays, dtype=FTYPE)
         self.rays /= tr.linalg.norm(self.rays, axis=-1)[..., None]
@@ -340,6 +360,7 @@ class ViewGeom:
 
     def plot(self, ax=None):
         """Generate Matplotlib wireframe plot for this object
+        @public
 
         Returns:
             matplotlib Axes
@@ -368,12 +389,19 @@ class ViewGeom:
 
 
 class ViewGeomCollection(ViewGeom):
-    """Set of viewing geometries
+    """Set of viewing geometries.
+
+    Generally this class is not instantiated by the user.
+    Instead compose primitive view geometries together with addition.
 
     Args:
         *geoms (ViewGeom): ViewGeoms with same shape
+
+    Attributes:
+        geoms (list[ViewGeom]): primitive view geometries making up this collection
     """
     def __init__(self, *geoms):
+        """@private"""
         if not all(g.shape == geoms[0].shape for g in geoms):
             raise ValueError("ViewGeoms must all have same shape")
         if len(geoms) == 1 and hasattr(geoms[0], 'geoms'):
@@ -382,6 +410,7 @@ class ViewGeomCollection(ViewGeom):
             self.geoms = list(geoms)
 
     def __add__(self, other):
+        """Add collections together by concatenating geoms"""
         if isinstance(other, ViewGeomCollection):
             self.geoms += other.geoms
             other.geoms += self.geoms
@@ -423,11 +452,6 @@ class ViewGeomCollection(ViewGeom):
         return sum([g._wireframe for g in self.geoms], [])
 
     def plot(self, ax=None):
-        """Generate Matplotlib wireframe plot for this object
-
-        Returns:
-            matplotlib Animation
-        """
         import matplotlib.pyplot as plt
         from matplotlib import animation
         from mpl_toolkits.mplot3d.art3d import Line3DCollection
@@ -487,6 +511,7 @@ class ConeRectGeom(ViewGeom):
     """
 
     def __init__(self, shape, pos, lookdir=None, updir=None, fov=(45, 45)):
+        """@private"""
         pos = tr.asarray(pos, dtype=FTYPE)
         if lookdir is None:
             lookdir = -pos
@@ -566,6 +591,7 @@ class ConeCircGeom(ConeRectGeom):
     """
 
     def __init__(self, *args, fov=(0, 45), spacing='lin', **kwargs):
+        """@private"""
         super().__init__(*args, fov=fov, **kwargs)
 
         # build r, theta grid
@@ -632,6 +658,7 @@ class ParallelGeom(ViewGeom):
     """
 
     def __init__(self, shape, pos, lookdir=None, updir=None, size=(1, 1)):
+        """@private"""
         pos = tr.asarray(pos, dtype=FTYPE)
         if lookdir is None:
             lookdir = -pos
