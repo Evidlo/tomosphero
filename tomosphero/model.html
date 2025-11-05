@@ -53,75 +53,24 @@
             <li>
                     <a class="class" href="#Model">Model</a>
                             <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#Model.__init__">Model</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#Model.__call__">__call__</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#Model.coeffs_shape">coeffs_shape</a>
-                        </li>
                 </ul>
 
             </li>
             <li>
                     <a class="class" href="#FullyDenseModel">FullyDenseModel</a>
                             <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#FullyDenseModel.__init__">FullyDenseModel</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#FullyDenseModel.grid">grid</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#FullyDenseModel.__call__">__call__</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#FullyDenseModel.coeffs_shape">coeffs_shape</a>
-                        </li>
                 </ul>
 
             </li>
             <li>
                     <a class="class" href="#CubesModel">CubesModel</a>
                             <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#CubesModel.__init__">CubesModel</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#CubesModel.grid">grid</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#CubesModel.obj">obj</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#CubesModel.__call__">__call__</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#CubesModel.coeffs_shape">coeffs_shape</a>
-                        </li>
                 </ul>
 
             </li>
             <li>
                     <a class="class" href="#AxisAlignmentModel">AxisAlignmentModel</a>
                             <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#AxisAlignmentModel.__init__">AxisAlignmentModel</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#AxisAlignmentModel.grid">grid</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#AxisAlignmentModel.obj">obj</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#AxisAlignmentModel.__call__">__call__</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#AxisAlignmentModel.coeffs_shape">coeffs_shape</a>
-                        </li>
                 </ul>
 
             </li>
@@ -142,141 +91,168 @@
                     <h1 class="modulename">
 <a href="./../tomosphero.html">tomosphero</a><wbr>.model    </h1>
 
-                
+                        <div class="docstring"><p>Models are mappings from a (usually) low dimensional space of coefficients to a 3D/4D object space.
+They are useful as a tool in tomographic retrievals to enforce certain properties in reconstructed objects.</p>
+
+<p>Models need not be linear, but they should be differentiable and implemented using PyTorch functions.</p>
+
+<p>See the docs for explanation on writing your own models.</p>
+</div>
+
                         <input id="mod-model-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-model-view-source"><span>View Source</span></label>
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="ch">#!/usr/bin/env python3</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">t</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">from</span> <span class="nn">tomosphero.geometry</span> <span class="kn">import</span> <span class="n">SphericalGrid</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="sd">Models are mappings from a (usually) low dimensional space of coefficients to a 3D/4D object space.</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="sd">They are useful as a tool in tomographic retrievals to enforce certain properties in reconstructed objects.</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A parameterized model for an object.  Subclass this class and provide</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="sd">    implementations for the unimplemented functions to make custom models</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="sd">    Properties:</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="sd">        coeffs_shape (tuple): Shape of input coeffs</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="sd">Models need not be linear, but they should be differentiable and implemented using PyTorch functions.</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="sd">See the docs for explanation on writing your own models.</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">import</span> <span class="nn">torch</span> <span class="k">as</span> <span class="nn">t</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>
-</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="sd">    Usage:</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="sd">        g = SphericalGrid(...)</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="sd">        m = Model(g)</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a>
-</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="sd">        x = m(coeffs)</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@public</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="sd">        Do any model setup here</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>
-</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@public</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="sd">        Generate object from parameters.</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>
-</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a><span class="sd">        Args:</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a><span class="sd">            coeffs (ndarray or tensor): array of shape self.coeffs_shape</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>
-</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">        Returns:</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">            object (tensor):</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>
-</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>    <span class="nd">@property</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Shape of coeffs&quot;&quot;&quot;</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>
-</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
-</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>
-</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a><span class="k">class</span> <span class="nc">FullyDenseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Parameters themselves are object values&quot;&quot;&quot;</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>        <span class="k">return</span> <span class="n">coeffs</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>    <span class="nd">@property</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>
-</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>
-</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a><span class="k">class</span> <span class="nc">CubesModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test model with two boxes in spherical coordinates&quot;&quot;&quot;</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.333</span><span class="p">,</span> <span class="mf">.666</span><span class="p">))</span>
-</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span><span class="p">))</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>        <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.7</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.4</span><span class="p">,</span> <span class="mf">.6</span><span class="p">))</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e00</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e01</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e10</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e11</span><span class="p">)</span>
-</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">from</span> <span class="nn">tomosphero.geometry</span> <span class="kn">import</span> <span class="n">SphericalGrid</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A parameterized model for an object.  Subclass this class and provide</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="sd">    implementations for `__init__`, `__call__` and `coeffs_shape`, to make custom models</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a><span class="sd">    Properties:</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="sd">        coeffs_shape (tuple): Shape of input coeffs</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="sd">    Usage:</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a><span class="sd">    ``` python</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a><span class="sd">        g = SphericalGrid(...)</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a><span class="sd">        m = MyCustomModel(g)</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a><span class="sd">        coeffs = t.rand(m.coeffs_shape)</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a><span class="sd">        x = m(coeffs)</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a><span class="sd">    ```</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@private</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a><span class="sd">        Do any model setup here</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@private</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a><span class="sd">        Generate object from parameters.</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a><span class="sd">        Args:</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a><span class="sd">            coeffs (ndarray or tensor): array of shape self.coeffs_shape</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a><span class="sd">        Returns:</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a><span class="sd">            object (tensor):</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>    <span class="nd">@property</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Shape of coeffs&quot;&quot;&quot;</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a><span class="k">class</span> <span class="nc">FullyDenseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic model which is an identity mapping from coefficients→object&quot;&quot;&quot;</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>        <span class="c1"># return coefficients directly</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>        <span class="k">return</span> <span class="n">coeffs</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>    <span class="nd">@property</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>
-</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e00):int(e01), int(a0):int(a1)] = 1</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e10):int(e11), int(a0):int(a1)] = 1</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e00</span><span class="p">:</span><span class="n">e01</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e10</span><span class="p">:</span><span class="n">e11</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>
-</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">r0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r1</span> <span class="o">=</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span>
-</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">e00</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e01</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e11</span> <span class="o">=</span> <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span>
-</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">=</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>
-</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>
-</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>    <span class="nd">@property</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>        <span class="k">return</span> <span class="p">()</span>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>
-</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>
-</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="k">class</span> <span class="nc">AxisAlignmentModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test Model to verify that tomographic projections are not mirrored</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a><span class="k">class</span> <span class="nc">CubesModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test model with two overlapping boxes in spherical coordinates&quot;&quot;&quot;</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.333</span><span class="p">,</span> <span class="mf">.666</span><span class="p">))</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span><span class="p">))</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.7</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.4</span><span class="p">,</span> <span class="mf">.6</span><span class="p">))</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e00</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e01</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e10</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e11</span><span class="p">)</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e00):int(e01), int(a0):int(a1)] = 1</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e10):int(e11), int(a0):int(a1)] = 1</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e00</span><span class="p">:</span><span class="n">e01</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e10</span><span class="p">:</span><span class="n">e11</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 </span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a><span class="sd">    ```</span>
-</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="sd">    Z</span>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a><span class="sd">    |</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a><span class="sd">    |</span>
-</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a><span class="sd">    |   Y</span>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a><span class="sd">    |  /</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a><span class="sd">    | /</span>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a><span class="sd">    |/</span>
-</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="sd">    .--X</span>
-</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a><span class="sd">    ```</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">r0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r1</span> <span class="o">=</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">e00</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e01</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e11</span> <span class="o">=</span> <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">=</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="nd">@property</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>        <span class="k">return</span> <span class="p">()</span>
 </span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>
-</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a><span class="k">class</span> <span class="nc">AxisAlignmentModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test Model to verify orientation of tomographic operator.  Useful for</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="sd">    detecting mirroring issues</span>
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>
-</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>        <span class="c1"># X axis</span>
-</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">3</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>        <span class="c1"># Y axis</span>
-</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span><span class="o">//</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>        <span class="c1"># Z axis</span>
-</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>    <span class="nd">@property</span>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>        <span class="k">return</span> <span class="p">()</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a><span class="sd">    ```</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a><span class="sd">    Z</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a><span class="sd">    |</span>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a><span class="sd">    |</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a><span class="sd">    |   Y</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a><span class="sd">    |  /</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a><span class="sd">    | /</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a><span class="sd">    |/</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a><span class="sd">    .--X</span>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a><span class="sd">    ```</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>        <span class="c1"># Z axis is longest, followed by Y then X</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>        <span class="c1"># X axis</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">3</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>        <span class="c1"># Y axis</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span><span class="o">//</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>        <span class="c1"># Z axis</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>    <span class="nd">@property</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@private&quot;&quot;&quot;</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>        <span class="k">return</span> <span class="p">()</span>
 </span></pre></div>
 
 
             </section>
                 <section id="Model">
                             <input id="Model-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
+    <div class="attr class">
             
     <span class="def">class</span>
     <span class="name">Model</span>:
@@ -285,50 +261,52 @@
 
     </div>
     <a class="headerlink" href="#Model"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Model-8"><a href="#Model-8"><span class="linenos"> 8</span></a><span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
-</span><span id="Model-9"><a href="#Model-9"><span class="linenos"> 9</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A parameterized model for an object.  Subclass this class and provide</span>
-</span><span id="Model-10"><a href="#Model-10"><span class="linenos">10</span></a><span class="sd">    implementations for the unimplemented functions to make custom models</span>
-</span><span id="Model-11"><a href="#Model-11"><span class="linenos">11</span></a>
-</span><span id="Model-12"><a href="#Model-12"><span class="linenos">12</span></a><span class="sd">    Properties:</span>
-</span><span id="Model-13"><a href="#Model-13"><span class="linenos">13</span></a><span class="sd">        coeffs_shape (tuple): Shape of input coeffs</span>
-</span><span id="Model-14"><a href="#Model-14"><span class="linenos">14</span></a>
-</span><span id="Model-15"><a href="#Model-15"><span class="linenos">15</span></a><span class="sd">    Usage:</span>
-</span><span id="Model-16"><a href="#Model-16"><span class="linenos">16</span></a><span class="sd">        g = SphericalGrid(...)</span>
-</span><span id="Model-17"><a href="#Model-17"><span class="linenos">17</span></a><span class="sd">        m = Model(g)</span>
-</span><span id="Model-18"><a href="#Model-18"><span class="linenos">18</span></a>
-</span><span id="Model-19"><a href="#Model-19"><span class="linenos">19</span></a><span class="sd">        x = m(coeffs)</span>
-</span><span id="Model-20"><a href="#Model-20"><span class="linenos">20</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="Model-21"><a href="#Model-21"><span class="linenos">21</span></a>
-</span><span id="Model-22"><a href="#Model-22"><span class="linenos">22</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="Model-23"><a href="#Model-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@public</span>
-</span><span id="Model-24"><a href="#Model-24"><span class="linenos">24</span></a><span class="sd">        Do any model setup here</span>
-</span><span id="Model-25"><a href="#Model-25"><span class="linenos">25</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Model-26"><a href="#Model-26"><span class="linenos">26</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span id="Model-27"><a href="#Model-27"><span class="linenos">27</span></a>
-</span><span id="Model-28"><a href="#Model-28"><span class="linenos">28</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="Model-29"><a href="#Model-29"><span class="linenos">29</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@public</span>
-</span><span id="Model-30"><a href="#Model-30"><span class="linenos">30</span></a><span class="sd">        Generate object from parameters.</span>
-</span><span id="Model-31"><a href="#Model-31"><span class="linenos">31</span></a>
-</span><span id="Model-32"><a href="#Model-32"><span class="linenos">32</span></a><span class="sd">        Args:</span>
-</span><span id="Model-33"><a href="#Model-33"><span class="linenos">33</span></a><span class="sd">            coeffs (ndarray or tensor): array of shape self.coeffs_shape</span>
-</span><span id="Model-34"><a href="#Model-34"><span class="linenos">34</span></a>
-</span><span id="Model-35"><a href="#Model-35"><span class="linenos">35</span></a><span class="sd">        Returns:</span>
-</span><span id="Model-36"><a href="#Model-36"><span class="linenos">36</span></a><span class="sd">            object (tensor):</span>
-</span><span id="Model-37"><a href="#Model-37"><span class="linenos">37</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Model-38"><a href="#Model-38"><span class="linenos">38</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span id="Model-39"><a href="#Model-39"><span class="linenos">39</span></a>
-</span><span id="Model-40"><a href="#Model-40"><span class="linenos">40</span></a>    <span class="nd">@property</span>
-</span><span id="Model-41"><a href="#Model-41"><span class="linenos">41</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Model-42"><a href="#Model-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Shape of coeffs&quot;&quot;&quot;</span>
-</span><span id="Model-43"><a href="#Model-43"><span class="linenos">43</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span id="Model-44"><a href="#Model-44"><span class="linenos">44</span></a>
-</span><span id="Model-45"><a href="#Model-45"><span class="linenos">45</span></a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Model-46"><a href="#Model-46"><span class="linenos">46</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Model-17"><a href="#Model-17"><span class="linenos">17</span></a><span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
+</span><span id="Model-18"><a href="#Model-18"><span class="linenos">18</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A parameterized model for an object.  Subclass this class and provide</span>
+</span><span id="Model-19"><a href="#Model-19"><span class="linenos">19</span></a><span class="sd">    implementations for `__init__`, `__call__` and `coeffs_shape`, to make custom models</span>
+</span><span id="Model-20"><a href="#Model-20"><span class="linenos">20</span></a>
+</span><span id="Model-21"><a href="#Model-21"><span class="linenos">21</span></a><span class="sd">    Properties:</span>
+</span><span id="Model-22"><a href="#Model-22"><span class="linenos">22</span></a><span class="sd">        coeffs_shape (tuple): Shape of input coeffs</span>
+</span><span id="Model-23"><a href="#Model-23"><span class="linenos">23</span></a>
+</span><span id="Model-24"><a href="#Model-24"><span class="linenos">24</span></a><span class="sd">    Usage:</span>
+</span><span id="Model-25"><a href="#Model-25"><span class="linenos">25</span></a><span class="sd">    ``` python</span>
+</span><span id="Model-26"><a href="#Model-26"><span class="linenos">26</span></a><span class="sd">        g = SphericalGrid(...)</span>
+</span><span id="Model-27"><a href="#Model-27"><span class="linenos">27</span></a><span class="sd">        m = MyCustomModel(g)</span>
+</span><span id="Model-28"><a href="#Model-28"><span class="linenos">28</span></a><span class="sd">        coeffs = t.rand(m.coeffs_shape)</span>
+</span><span id="Model-29"><a href="#Model-29"><span class="linenos">29</span></a><span class="sd">        x = m(coeffs)</span>
+</span><span id="Model-30"><a href="#Model-30"><span class="linenos">30</span></a><span class="sd">    ```</span>
+</span><span id="Model-31"><a href="#Model-31"><span class="linenos">31</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="Model-32"><a href="#Model-32"><span class="linenos">32</span></a>
+</span><span id="Model-33"><a href="#Model-33"><span class="linenos">33</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="Model-34"><a href="#Model-34"><span class="linenos">34</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@private</span>
+</span><span id="Model-35"><a href="#Model-35"><span class="linenos">35</span></a><span class="sd">        Do any model setup here</span>
+</span><span id="Model-36"><a href="#Model-36"><span class="linenos">36</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Model-37"><a href="#Model-37"><span class="linenos">37</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span id="Model-38"><a href="#Model-38"><span class="linenos">38</span></a>
+</span><span id="Model-39"><a href="#Model-39"><span class="linenos">39</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="Model-40"><a href="#Model-40"><span class="linenos">40</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@private</span>
+</span><span id="Model-41"><a href="#Model-41"><span class="linenos">41</span></a><span class="sd">        Generate object from parameters.</span>
+</span><span id="Model-42"><a href="#Model-42"><span class="linenos">42</span></a>
+</span><span id="Model-43"><a href="#Model-43"><span class="linenos">43</span></a><span class="sd">        Args:</span>
+</span><span id="Model-44"><a href="#Model-44"><span class="linenos">44</span></a><span class="sd">            coeffs (ndarray or tensor): array of shape self.coeffs_shape</span>
+</span><span id="Model-45"><a href="#Model-45"><span class="linenos">45</span></a>
+</span><span id="Model-46"><a href="#Model-46"><span class="linenos">46</span></a><span class="sd">        Returns:</span>
+</span><span id="Model-47"><a href="#Model-47"><span class="linenos">47</span></a><span class="sd">            object (tensor):</span>
+</span><span id="Model-48"><a href="#Model-48"><span class="linenos">48</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Model-49"><a href="#Model-49"><span class="linenos">49</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span id="Model-50"><a href="#Model-50"><span class="linenos">50</span></a>
+</span><span id="Model-51"><a href="#Model-51"><span class="linenos">51</span></a>    <span class="nd">@property</span>
+</span><span id="Model-52"><a href="#Model-52"><span class="linenos">52</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Model-53"><a href="#Model-53"><span class="linenos">53</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Shape of coeffs&quot;&quot;&quot;</span>
+</span><span id="Model-54"><a href="#Model-54"><span class="linenos">54</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span id="Model-55"><a href="#Model-55"><span class="linenos">55</span></a>
+</span><span id="Model-56"><a href="#Model-56"><span class="linenos">56</span></a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Model-57"><a href="#Model-57"><span class="linenos">57</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>A parameterized model for an object.  Subclass this class and provide
-implementations for the unimplemented functions to make custom models</p>
+implementations for <code>__init__</code>, <code>__call__</code> and <code><a href="#Model.coeffs_shape">coeffs_shape</a></code>, to make custom models</p>
 
 <h6 id="properties">Properties:</h6>
 
@@ -336,107 +314,26 @@ implementations for the unimplemented functions to make custom models</p>
   <p>coeffs_shape (tuple): Shape of input coeffs</p>
 </blockquote>
 
-<h6 id="usage">Usage:</h6>
+<p>Usage:</p>
 
-<blockquote>
-  <p>g = SphericalGrid(...)
-  m = Model(g)</p>
-  
-  <p>x = m(coeffs)</p>
-</blockquote>
+<div class="pdoc-code codehilite">
+<pre><span></span><code>    <span class="n">g</span> <span class="o">=</span> <span class="n">SphericalGrid</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">MyCustomModel</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">coeffs_shape</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+</code></pre>
+</div>
 </div>
 
 
-                            <div id="Model.__init__" class="classattr">
-                                        <input id="Model.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="name">Model</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a href="geometry.html#SphericalGrid">tomosphero.geometry.SphericalGrid</a></span></span>)</span>
-
-                <label class="view-source-button" for="Model.__init__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Model.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Model.__init__-22"><a href="#Model.__init__-22"><span class="linenos">22</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="Model.__init__-23"><a href="#Model.__init__-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@public</span>
-</span><span id="Model.__init__-24"><a href="#Model.__init__-24"><span class="linenos">24</span></a><span class="sd">        Do any model setup here</span>
-</span><span id="Model.__init__-25"><a href="#Model.__init__-25"><span class="linenos">25</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Model.__init__-26"><a href="#Model.__init__-26"><span class="linenos">26</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Do any model setup here</p>
-</div>
-
-
-                            </div>
-                            <div id="Model.__call__" class="classattr">
-                                        <input id="Model.__call__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">__call__</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">coeffs</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="Model.__call__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Model.__call__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Model.__call__-28"><a href="#Model.__call__-28"><span class="linenos">28</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="Model.__call__-29"><a href="#Model.__call__-29"><span class="linenos">29</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@public</span>
-</span><span id="Model.__call__-30"><a href="#Model.__call__-30"><span class="linenos">30</span></a><span class="sd">        Generate object from parameters.</span>
-</span><span id="Model.__call__-31"><a href="#Model.__call__-31"><span class="linenos">31</span></a>
-</span><span id="Model.__call__-32"><a href="#Model.__call__-32"><span class="linenos">32</span></a><span class="sd">        Args:</span>
-</span><span id="Model.__call__-33"><a href="#Model.__call__-33"><span class="linenos">33</span></a><span class="sd">            coeffs (ndarray or tensor): array of shape self.coeffs_shape</span>
-</span><span id="Model.__call__-34"><a href="#Model.__call__-34"><span class="linenos">34</span></a>
-</span><span id="Model.__call__-35"><a href="#Model.__call__-35"><span class="linenos">35</span></a><span class="sd">        Returns:</span>
-</span><span id="Model.__call__-36"><a href="#Model.__call__-36"><span class="linenos">36</span></a><span class="sd">            object (tensor):</span>
-</span><span id="Model.__call__-37"><a href="#Model.__call__-37"><span class="linenos">37</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Model.__call__-38"><a href="#Model.__call__-38"><span class="linenos">38</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Generate object from parameters.</p>
-
-<h6 id="arguments">Arguments:</h6>
-
-<ul>
-<li><strong>coeffs (ndarray or tensor):</strong>  array of shape self.coeffs_shape</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>object (tensor):</p>
-</blockquote>
-</div>
-
-
-                            </div>
                             <div id="Model.coeffs_shape" class="classattr">
                                         <input id="Model.coeffs_shape-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">coeffs_shape</span>
-
-                <label class="view-source-button" for="Model.coeffs_shape-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#Model.coeffs_shape"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Model.coeffs_shape-40"><a href="#Model.coeffs_shape-40"><span class="linenos">40</span></a>    <span class="nd">@property</span>
-</span><span id="Model.coeffs_shape-41"><a href="#Model.coeffs_shape-41"><span class="linenos">41</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Model.coeffs_shape-42"><a href="#Model.coeffs_shape-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Shape of coeffs&quot;&quot;&quot;</span>
-</span><span id="Model.coeffs_shape-43"><a href="#Model.coeffs_shape-43"><span class="linenos">43</span></a>        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Shape of coeffs</p>
-</div>
-
 
                             </div>
                 </section>
                 <section id="FullyDenseModel">
                             <input id="FullyDenseModel-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
+    <div class="attr class">
             
     <span class="def">class</span>
     <span class="name">FullyDenseModel</span><wbr>(<span class="base"><a href="#Model">Model</a></span>):
@@ -445,112 +342,38 @@ implementations for the unimplemented functions to make custom models</p>
 
     </div>
     <a class="headerlink" href="#FullyDenseModel"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="FullyDenseModel-49"><a href="#FullyDenseModel-49"><span class="linenos">49</span></a><span class="k">class</span> <span class="nc">FullyDenseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-</span><span id="FullyDenseModel-50"><a href="#FullyDenseModel-50"><span class="linenos">50</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Parameters themselves are object values&quot;&quot;&quot;</span>
-</span><span id="FullyDenseModel-51"><a href="#FullyDenseModel-51"><span class="linenos">51</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="FullyDenseModel-52"><a href="#FullyDenseModel-52"><span class="linenos">52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="FullyDenseModel-53"><a href="#FullyDenseModel-53"><span class="linenos">53</span></a>
-</span><span id="FullyDenseModel-54"><a href="#FullyDenseModel-54"><span class="linenos">54</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="FullyDenseModel-55"><a href="#FullyDenseModel-55"><span class="linenos">55</span></a>        <span class="k">return</span> <span class="n">coeffs</span>
-</span><span id="FullyDenseModel-56"><a href="#FullyDenseModel-56"><span class="linenos">56</span></a>
-</span><span id="FullyDenseModel-57"><a href="#FullyDenseModel-57"><span class="linenos">57</span></a>    <span class="nd">@property</span>
-</span><span id="FullyDenseModel-58"><a href="#FullyDenseModel-58"><span class="linenos">58</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="FullyDenseModel-59"><a href="#FullyDenseModel-59"><span class="linenos">59</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="FullyDenseModel-60"><a href="#FullyDenseModel-60"><span class="linenos">60</span></a><span class="k">class</span> <span class="nc">FullyDenseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="FullyDenseModel-61"><a href="#FullyDenseModel-61"><span class="linenos">61</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic model which is an identity mapping from coefficients→object&quot;&quot;&quot;</span>
+</span><span id="FullyDenseModel-62"><a href="#FullyDenseModel-62"><span class="linenos">62</span></a>
+</span><span id="FullyDenseModel-63"><a href="#FullyDenseModel-63"><span class="linenos">63</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="FullyDenseModel-64"><a href="#FullyDenseModel-64"><span class="linenos">64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+</span><span id="FullyDenseModel-65"><a href="#FullyDenseModel-65"><span class="linenos">65</span></a>
+</span><span id="FullyDenseModel-66"><a href="#FullyDenseModel-66"><span class="linenos">66</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="FullyDenseModel-67"><a href="#FullyDenseModel-67"><span class="linenos">67</span></a>
+</span><span id="FullyDenseModel-68"><a href="#FullyDenseModel-68"><span class="linenos">68</span></a>        <span class="c1"># return coefficients directly</span>
+</span><span id="FullyDenseModel-69"><a href="#FullyDenseModel-69"><span class="linenos">69</span></a>        <span class="k">return</span> <span class="n">coeffs</span>
+</span><span id="FullyDenseModel-70"><a href="#FullyDenseModel-70"><span class="linenos">70</span></a>
+</span><span id="FullyDenseModel-71"><a href="#FullyDenseModel-71"><span class="linenos">71</span></a>    <span class="nd">@property</span>
+</span><span id="FullyDenseModel-72"><a href="#FullyDenseModel-72"><span class="linenos">72</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="FullyDenseModel-73"><a href="#FullyDenseModel-73"><span class="linenos">73</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parameters themselves are object values</p>
+            <div class="docstring"><p>Basic model which is an identity mapping from coefficients→object</p>
 </div>
 
 
-                            <div id="FullyDenseModel.__init__" class="classattr">
-                                        <input id="FullyDenseModel.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="name">FullyDenseModel</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a href="geometry.html#SphericalGrid">tomosphero.geometry.SphericalGrid</a></span></span>)</span>
-
-                <label class="view-source-button" for="FullyDenseModel.__init__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#FullyDenseModel.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="FullyDenseModel.__init__-51"><a href="#FullyDenseModel.__init__-51"><span class="linenos">51</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="FullyDenseModel.__init__-52"><a href="#FullyDenseModel.__init__-52"><span class="linenos">52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Do any model setup here</p>
-</div>
-
-
-                            </div>
                             <div id="FullyDenseModel.grid" class="classattr">
-                                <div class="attr variable">
-            <span class="name">grid</span>
-
-        
-    </div>
-    <a class="headerlink" href="#FullyDenseModel.grid"></a>
-    
-    
-
-                            </div>
-                            <div id="FullyDenseModel.__call__" class="classattr">
-                                        <input id="FullyDenseModel.__call__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">__call__</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">coeffs</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="FullyDenseModel.__call__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#FullyDenseModel.__call__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="FullyDenseModel.__call__-54"><a href="#FullyDenseModel.__call__-54"><span class="linenos">54</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="FullyDenseModel.__call__-55"><a href="#FullyDenseModel.__call__-55"><span class="linenos">55</span></a>        <span class="k">return</span> <span class="n">coeffs</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Generate object from parameters.</p>
-
-<h6 id="arguments">Arguments:</h6>
-
-<ul>
-<li><strong>coeffs (ndarray or tensor):</strong>  array of shape self.coeffs_shape</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>object (tensor):</p>
-</blockquote>
-</div>
-
-
+                                
                             </div>
                             <div id="FullyDenseModel.coeffs_shape" class="classattr">
                                         <input id="FullyDenseModel.coeffs_shape-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">coeffs_shape</span>
-
-                <label class="view-source-button" for="FullyDenseModel.coeffs_shape-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#FullyDenseModel.coeffs_shape"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="FullyDenseModel.coeffs_shape-57"><a href="#FullyDenseModel.coeffs_shape-57"><span class="linenos">57</span></a>    <span class="nd">@property</span>
-</span><span id="FullyDenseModel.coeffs_shape-58"><a href="#FullyDenseModel.coeffs_shape-58"><span class="linenos">58</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="FullyDenseModel.coeffs_shape-59"><a href="#FullyDenseModel.coeffs_shape-59"><span class="linenos">59</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Shape of coeffs</p>
-</div>
-
 
                             </div>
                 </section>
                 <section id="CubesModel">
                             <input id="CubesModel-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
+    <div class="attr class">
             
     <span class="def">class</span>
     <span class="name">CubesModel</span><wbr>(<span class="base"><a href="#Model">Model</a></span>):
@@ -559,159 +382,57 @@ implementations for the unimplemented functions to make custom models</p>
 
     </div>
     <a class="headerlink" href="#CubesModel"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="CubesModel-62"><a href="#CubesModel-62"><span class="linenos">62</span></a><span class="k">class</span> <span class="nc">CubesModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-</span><span id="CubesModel-63"><a href="#CubesModel-63"><span class="linenos">63</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test model with two boxes in spherical coordinates&quot;&quot;&quot;</span>
-</span><span id="CubesModel-64"><a href="#CubesModel-64"><span class="linenos">64</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="CubesModel-65"><a href="#CubesModel-65"><span class="linenos">65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="CubesModel-66"><a href="#CubesModel-66"><span class="linenos">66</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</span><span id="CubesModel-67"><a href="#CubesModel-67"><span class="linenos">67</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.333</span><span class="p">,</span> <span class="mf">.666</span><span class="p">))</span>
-</span><span id="CubesModel-68"><a href="#CubesModel-68"><span class="linenos">68</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span><span class="p">))</span>
-</span><span id="CubesModel-69"><a href="#CubesModel-69"><span class="linenos">69</span></a>        <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.7</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
-</span><span id="CubesModel-70"><a href="#CubesModel-70"><span class="linenos">70</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.4</span><span class="p">,</span> <span class="mf">.6</span><span class="p">))</span>
-</span><span id="CubesModel-71"><a href="#CubesModel-71"><span class="linenos">71</span></a>
-</span><span id="CubesModel-72"><a href="#CubesModel-72"><span class="linenos">72</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
-</span><span id="CubesModel-73"><a href="#CubesModel-73"><span class="linenos">73</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e00</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e01</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e10</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e11</span><span class="p">)</span>
-</span><span id="CubesModel-74"><a href="#CubesModel-74"><span class="linenos">74</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
-</span><span id="CubesModel-75"><a href="#CubesModel-75"><span class="linenos">75</span></a>
-</span><span id="CubesModel-76"><a href="#CubesModel-76"><span class="linenos">76</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e00):int(e01), int(a0):int(a1)] = 1</span>
-</span><span id="CubesModel-77"><a href="#CubesModel-77"><span class="linenos">77</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e10):int(e11), int(a0):int(a1)] = 1</span>
-</span><span id="CubesModel-78"><a href="#CubesModel-78"><span class="linenos">78</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e00</span><span class="p">:</span><span class="n">e01</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="CubesModel-79"><a href="#CubesModel-79"><span class="linenos">79</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e10</span><span class="p">:</span><span class="n">e11</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="CubesModel-80"><a href="#CubesModel-80"><span class="linenos">80</span></a>
-</span><span id="CubesModel-81"><a href="#CubesModel-81"><span class="linenos">81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">r0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r1</span> <span class="o">=</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span>
-</span><span id="CubesModel-82"><a href="#CubesModel-82"><span class="linenos">82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">e00</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e01</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e11</span> <span class="o">=</span> <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span>
-</span><span id="CubesModel-83"><a href="#CubesModel-83"><span class="linenos">83</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">=</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span>
-</span><span id="CubesModel-84"><a href="#CubesModel-84"><span class="linenos">84</span></a>
-</span><span id="CubesModel-85"><a href="#CubesModel-85"><span class="linenos">85</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="CubesModel-86"><a href="#CubesModel-86"><span class="linenos">86</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-</span><span id="CubesModel-87"><a href="#CubesModel-87"><span class="linenos">87</span></a>
-</span><span id="CubesModel-88"><a href="#CubesModel-88"><span class="linenos">88</span></a>    <span class="nd">@property</span>
-</span><span id="CubesModel-89"><a href="#CubesModel-89"><span class="linenos">89</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="CubesModel-90"><a href="#CubesModel-90"><span class="linenos">90</span></a>        <span class="k">return</span> <span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="CubesModel-76"><a href="#CubesModel-76"><span class="linenos"> 76</span></a><span class="k">class</span> <span class="nc">CubesModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="CubesModel-77"><a href="#CubesModel-77"><span class="linenos"> 77</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test model with two overlapping boxes in spherical coordinates&quot;&quot;&quot;</span>
+</span><span id="CubesModel-78"><a href="#CubesModel-78"><span class="linenos"> 78</span></a>
+</span><span id="CubesModel-79"><a href="#CubesModel-79"><span class="linenos"> 79</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="CubesModel-80"><a href="#CubesModel-80"><span class="linenos"> 80</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+</span><span id="CubesModel-81"><a href="#CubesModel-81"><span class="linenos"> 81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span id="CubesModel-82"><a href="#CubesModel-82"><span class="linenos"> 82</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.333</span><span class="p">,</span> <span class="mf">.666</span><span class="p">))</span>
+</span><span id="CubesModel-83"><a href="#CubesModel-83"><span class="linenos"> 83</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span><span class="p">))</span>
+</span><span id="CubesModel-84"><a href="#CubesModel-84"><span class="linenos"> 84</span></a>        <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.7</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
+</span><span id="CubesModel-85"><a href="#CubesModel-85"><span class="linenos"> 85</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.4</span><span class="p">,</span> <span class="mf">.6</span><span class="p">))</span>
+</span><span id="CubesModel-86"><a href="#CubesModel-86"><span class="linenos"> 86</span></a>
+</span><span id="CubesModel-87"><a href="#CubesModel-87"><span class="linenos"> 87</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+</span><span id="CubesModel-88"><a href="#CubesModel-88"><span class="linenos"> 88</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e00</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e01</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e10</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e11</span><span class="p">)</span>
+</span><span id="CubesModel-89"><a href="#CubesModel-89"><span class="linenos"> 89</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+</span><span id="CubesModel-90"><a href="#CubesModel-90"><span class="linenos"> 90</span></a>
+</span><span id="CubesModel-91"><a href="#CubesModel-91"><span class="linenos"> 91</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e00):int(e01), int(a0):int(a1)] = 1</span>
+</span><span id="CubesModel-92"><a href="#CubesModel-92"><span class="linenos"> 92</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e10):int(e11), int(a0):int(a1)] = 1</span>
+</span><span id="CubesModel-93"><a href="#CubesModel-93"><span class="linenos"> 93</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e00</span><span class="p">:</span><span class="n">e01</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="CubesModel-94"><a href="#CubesModel-94"><span class="linenos"> 94</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e10</span><span class="p">:</span><span class="n">e11</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="CubesModel-95"><a href="#CubesModel-95"><span class="linenos"> 95</span></a>
+</span><span id="CubesModel-96"><a href="#CubesModel-96"><span class="linenos"> 96</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">r0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r1</span> <span class="o">=</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span>
+</span><span id="CubesModel-97"><a href="#CubesModel-97"><span class="linenos"> 97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">e00</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e01</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e11</span> <span class="o">=</span> <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span>
+</span><span id="CubesModel-98"><a href="#CubesModel-98"><span class="linenos"> 98</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">=</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span>
+</span><span id="CubesModel-99"><a href="#CubesModel-99"><span class="linenos"> 99</span></a>
+</span><span id="CubesModel-100"><a href="#CubesModel-100"><span class="linenos">100</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="CubesModel-101"><a href="#CubesModel-101"><span class="linenos">101</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+</span><span id="CubesModel-102"><a href="#CubesModel-102"><span class="linenos">102</span></a>
+</span><span id="CubesModel-103"><a href="#CubesModel-103"><span class="linenos">103</span></a>    <span class="nd">@property</span>
+</span><span id="CubesModel-104"><a href="#CubesModel-104"><span class="linenos">104</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="CubesModel-105"><a href="#CubesModel-105"><span class="linenos">105</span></a>        <span class="k">return</span> <span class="p">()</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Test model with two boxes in spherical coordinates</p>
+            <div class="docstring"><p>Test model with two overlapping boxes in spherical coordinates</p>
 </div>
 
 
-                            <div id="CubesModel.__init__" class="classattr">
-                                        <input id="CubesModel.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="name">CubesModel</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a href="geometry.html#SphericalGrid">tomosphero.geometry.SphericalGrid</a></span></span>)</span>
-
-                <label class="view-source-button" for="CubesModel.__init__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#CubesModel.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="CubesModel.__init__-64"><a href="#CubesModel.__init__-64"><span class="linenos">64</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="CubesModel.__init__-65"><a href="#CubesModel.__init__-65"><span class="linenos">65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="CubesModel.__init__-66"><a href="#CubesModel.__init__-66"><span class="linenos">66</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</span><span id="CubesModel.__init__-67"><a href="#CubesModel.__init__-67"><span class="linenos">67</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.333</span><span class="p">,</span> <span class="mf">.666</span><span class="p">))</span>
-</span><span id="CubesModel.__init__-68"><a href="#CubesModel.__init__-68"><span class="linenos">68</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span><span class="p">))</span>
-</span><span id="CubesModel.__init__-69"><a href="#CubesModel.__init__-69"><span class="linenos">69</span></a>        <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.7</span><span class="p">,</span> <span class="mf">.9</span><span class="p">))</span>
-</span><span id="CubesModel.__init__-70"><a href="#CubesModel.__init__-70"><span class="linenos">70</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">.4</span><span class="p">,</span> <span class="mf">.6</span><span class="p">))</span>
-</span><span id="CubesModel.__init__-71"><a href="#CubesModel.__init__-71"><span class="linenos">71</span></a>
-</span><span id="CubesModel.__init__-72"><a href="#CubesModel.__init__-72"><span class="linenos">72</span></a>        <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
-</span><span id="CubesModel.__init__-73"><a href="#CubesModel.__init__-73"><span class="linenos">73</span></a>        <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">e00</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e01</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e10</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e11</span><span class="p">)</span>
-</span><span id="CubesModel.__init__-74"><a href="#CubesModel.__init__-74"><span class="linenos">74</span></a>        <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
-</span><span id="CubesModel.__init__-75"><a href="#CubesModel.__init__-75"><span class="linenos">75</span></a>
-</span><span id="CubesModel.__init__-76"><a href="#CubesModel.__init__-76"><span class="linenos">76</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e00):int(e01), int(a0):int(a1)] = 1</span>
-</span><span id="CubesModel.__init__-77"><a href="#CubesModel.__init__-77"><span class="linenos">77</span></a>        <span class="c1"># self.obj[int(r0):int(r1), int(e10):int(e11), int(a0):int(a1)] = 1</span>
-</span><span id="CubesModel.__init__-78"><a href="#CubesModel.__init__-78"><span class="linenos">78</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e00</span><span class="p">:</span><span class="n">e01</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="CubesModel.__init__-79"><a href="#CubesModel.__init__-79"><span class="linenos">79</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[</span><span class="n">r0</span><span class="p">:</span><span class="n">r1</span><span class="p">,</span> <span class="n">e10</span><span class="p">:</span><span class="n">e11</span><span class="p">,</span> <span class="n">a0</span><span class="p">:</span><span class="n">a1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="CubesModel.__init__-80"><a href="#CubesModel.__init__-80"><span class="linenos">80</span></a>
-</span><span id="CubesModel.__init__-81"><a href="#CubesModel.__init__-81"><span class="linenos">81</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">r0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r1</span> <span class="o">=</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span>
-</span><span id="CubesModel.__init__-82"><a href="#CubesModel.__init__-82"><span class="linenos">82</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">e00</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e01</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e10</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e11</span> <span class="o">=</span> <span class="n">e00</span><span class="p">,</span> <span class="n">e01</span><span class="p">,</span> <span class="n">e10</span><span class="p">,</span> <span class="n">e11</span>
-</span><span id="CubesModel.__init__-83"><a href="#CubesModel.__init__-83"><span class="linenos">83</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a1</span> <span class="o">=</span> <span class="n">a0</span><span class="p">,</span> <span class="n">a1</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Do any model setup here</p>
-</div>
-
-
-                            </div>
                             <div id="CubesModel.grid" class="classattr">
-                                <div class="attr variable">
-            <span class="name">grid</span>
-
-        
-    </div>
-    <a class="headerlink" href="#CubesModel.grid"></a>
-    
-    
-
+                                
                             </div>
                             <div id="CubesModel.obj" class="classattr">
-                                <div class="attr variable">
-            <span class="name">obj</span>
-
-        
-    </div>
-    <a class="headerlink" href="#CubesModel.obj"></a>
-    
-    
-
-                            </div>
-                            <div id="CubesModel.__call__" class="classattr">
-                                        <input id="CubesModel.__call__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">__call__</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">coeffs</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="CubesModel.__call__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#CubesModel.__call__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="CubesModel.__call__-85"><a href="#CubesModel.__call__-85"><span class="linenos">85</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="CubesModel.__call__-86"><a href="#CubesModel.__call__-86"><span class="linenos">86</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Generate object from parameters.</p>
-
-<h6 id="arguments">Arguments:</h6>
-
-<ul>
-<li><strong>coeffs (ndarray or tensor):</strong>  array of shape self.coeffs_shape</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>object (tensor):</p>
-</blockquote>
-</div>
-
-
+                                
                             </div>
                             <div id="CubesModel.coeffs_shape" class="classattr">
                                         <input id="CubesModel.coeffs_shape-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">coeffs_shape</span>
-
-                <label class="view-source-button" for="CubesModel.coeffs_shape-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#CubesModel.coeffs_shape"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="CubesModel.coeffs_shape-88"><a href="#CubesModel.coeffs_shape-88"><span class="linenos">88</span></a>    <span class="nd">@property</span>
-</span><span id="CubesModel.coeffs_shape-89"><a href="#CubesModel.coeffs_shape-89"><span class="linenos">89</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="CubesModel.coeffs_shape-90"><a href="#CubesModel.coeffs_shape-90"><span class="linenos">90</span></a>        <span class="k">return</span> <span class="p">()</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Shape of coeffs</p>
-</div>
-
 
                             </div>
                 </section>
                 <section id="AxisAlignmentModel">
                             <input id="AxisAlignmentModel-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
+    <div class="attr class">
             
     <span class="def">class</span>
     <span class="name">AxisAlignmentModel</span><wbr>(<span class="base"><a href="#Model">Model</a></span>):
@@ -720,42 +441,48 @@ implementations for the unimplemented functions to make custom models</p>
 
     </div>
     <a class="headerlink" href="#AxisAlignmentModel"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AxisAlignmentModel-93"><a href="#AxisAlignmentModel-93"><span class="linenos"> 93</span></a><span class="k">class</span> <span class="nc">AxisAlignmentModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-</span><span id="AxisAlignmentModel-94"><a href="#AxisAlignmentModel-94"><span class="linenos"> 94</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test Model to verify that tomographic projections are not mirrored</span>
-</span><span id="AxisAlignmentModel-95"><a href="#AxisAlignmentModel-95"><span class="linenos"> 95</span></a>
-</span><span id="AxisAlignmentModel-96"><a href="#AxisAlignmentModel-96"><span class="linenos"> 96</span></a><span class="sd">    ```</span>
-</span><span id="AxisAlignmentModel-97"><a href="#AxisAlignmentModel-97"><span class="linenos"> 97</span></a><span class="sd">    Z</span>
-</span><span id="AxisAlignmentModel-98"><a href="#AxisAlignmentModel-98"><span class="linenos"> 98</span></a><span class="sd">    |</span>
-</span><span id="AxisAlignmentModel-99"><a href="#AxisAlignmentModel-99"><span class="linenos"> 99</span></a><span class="sd">    |</span>
-</span><span id="AxisAlignmentModel-100"><a href="#AxisAlignmentModel-100"><span class="linenos">100</span></a><span class="sd">    |   Y</span>
-</span><span id="AxisAlignmentModel-101"><a href="#AxisAlignmentModel-101"><span class="linenos">101</span></a><span class="sd">    |  /</span>
-</span><span id="AxisAlignmentModel-102"><a href="#AxisAlignmentModel-102"><span class="linenos">102</span></a><span class="sd">    | /</span>
-</span><span id="AxisAlignmentModel-103"><a href="#AxisAlignmentModel-103"><span class="linenos">103</span></a><span class="sd">    |/</span>
-</span><span id="AxisAlignmentModel-104"><a href="#AxisAlignmentModel-104"><span class="linenos">104</span></a><span class="sd">    .--X</span>
-</span><span id="AxisAlignmentModel-105"><a href="#AxisAlignmentModel-105"><span class="linenos">105</span></a><span class="sd">    ```</span>
-</span><span id="AxisAlignmentModel-106"><a href="#AxisAlignmentModel-106"><span class="linenos">106</span></a>
-</span><span id="AxisAlignmentModel-107"><a href="#AxisAlignmentModel-107"><span class="linenos">107</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="AxisAlignmentModel-108"><a href="#AxisAlignmentModel-108"><span class="linenos">108</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="AxisAlignmentModel-109"><a href="#AxisAlignmentModel-109"><span class="linenos">109</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="AxisAlignmentModel-110"><a href="#AxisAlignmentModel-110"><span class="linenos">110</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="AxisAlignmentModel-108"><a href="#AxisAlignmentModel-108"><span class="linenos">108</span></a><span class="k">class</span> <span class="nc">AxisAlignmentModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+</span><span id="AxisAlignmentModel-109"><a href="#AxisAlignmentModel-109"><span class="linenos">109</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test Model to verify orientation of tomographic operator.  Useful for</span>
+</span><span id="AxisAlignmentModel-110"><a href="#AxisAlignmentModel-110"><span class="linenos">110</span></a><span class="sd">    detecting mirroring issues</span>
 </span><span id="AxisAlignmentModel-111"><a href="#AxisAlignmentModel-111"><span class="linenos">111</span></a>
-</span><span id="AxisAlignmentModel-112"><a href="#AxisAlignmentModel-112"><span class="linenos">112</span></a>        <span class="c1"># X axis</span>
-</span><span id="AxisAlignmentModel-113"><a href="#AxisAlignmentModel-113"><span class="linenos">113</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">3</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="AxisAlignmentModel-114"><a href="#AxisAlignmentModel-114"><span class="linenos">114</span></a>        <span class="c1"># Y axis</span>
-</span><span id="AxisAlignmentModel-115"><a href="#AxisAlignmentModel-115"><span class="linenos">115</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span><span class="o">//</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="AxisAlignmentModel-116"><a href="#AxisAlignmentModel-116"><span class="linenos">116</span></a>        <span class="c1"># Z axis</span>
-</span><span id="AxisAlignmentModel-117"><a href="#AxisAlignmentModel-117"><span class="linenos">117</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="AxisAlignmentModel-118"><a href="#AxisAlignmentModel-118"><span class="linenos">118</span></a>
-</span><span id="AxisAlignmentModel-119"><a href="#AxisAlignmentModel-119"><span class="linenos">119</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="AxisAlignmentModel-120"><a href="#AxisAlignmentModel-120"><span class="linenos">120</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-</span><span id="AxisAlignmentModel-121"><a href="#AxisAlignmentModel-121"><span class="linenos">121</span></a>
-</span><span id="AxisAlignmentModel-122"><a href="#AxisAlignmentModel-122"><span class="linenos">122</span></a>    <span class="nd">@property</span>
-</span><span id="AxisAlignmentModel-123"><a href="#AxisAlignmentModel-123"><span class="linenos">123</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="AxisAlignmentModel-124"><a href="#AxisAlignmentModel-124"><span class="linenos">124</span></a>        <span class="k">return</span> <span class="p">()</span>
+</span><span id="AxisAlignmentModel-112"><a href="#AxisAlignmentModel-112"><span class="linenos">112</span></a>
+</span><span id="AxisAlignmentModel-113"><a href="#AxisAlignmentModel-113"><span class="linenos">113</span></a><span class="sd">    ```</span>
+</span><span id="AxisAlignmentModel-114"><a href="#AxisAlignmentModel-114"><span class="linenos">114</span></a><span class="sd">    Z</span>
+</span><span id="AxisAlignmentModel-115"><a href="#AxisAlignmentModel-115"><span class="linenos">115</span></a><span class="sd">    |</span>
+</span><span id="AxisAlignmentModel-116"><a href="#AxisAlignmentModel-116"><span class="linenos">116</span></a><span class="sd">    |</span>
+</span><span id="AxisAlignmentModel-117"><a href="#AxisAlignmentModel-117"><span class="linenos">117</span></a><span class="sd">    |   Y</span>
+</span><span id="AxisAlignmentModel-118"><a href="#AxisAlignmentModel-118"><span class="linenos">118</span></a><span class="sd">    |  /</span>
+</span><span id="AxisAlignmentModel-119"><a href="#AxisAlignmentModel-119"><span class="linenos">119</span></a><span class="sd">    | /</span>
+</span><span id="AxisAlignmentModel-120"><a href="#AxisAlignmentModel-120"><span class="linenos">120</span></a><span class="sd">    |/</span>
+</span><span id="AxisAlignmentModel-121"><a href="#AxisAlignmentModel-121"><span class="linenos">121</span></a><span class="sd">    .--X</span>
+</span><span id="AxisAlignmentModel-122"><a href="#AxisAlignmentModel-122"><span class="linenos">122</span></a><span class="sd">    ```</span>
+</span><span id="AxisAlignmentModel-123"><a href="#AxisAlignmentModel-123"><span class="linenos">123</span></a>
+</span><span id="AxisAlignmentModel-124"><a href="#AxisAlignmentModel-124"><span class="linenos">124</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="AxisAlignmentModel-125"><a href="#AxisAlignmentModel-125"><span class="linenos">125</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
+</span><span id="AxisAlignmentModel-126"><a href="#AxisAlignmentModel-126"><span class="linenos">126</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+</span><span id="AxisAlignmentModel-127"><a href="#AxisAlignmentModel-127"><span class="linenos">127</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span id="AxisAlignmentModel-128"><a href="#AxisAlignmentModel-128"><span class="linenos">128</span></a>
+</span><span id="AxisAlignmentModel-129"><a href="#AxisAlignmentModel-129"><span class="linenos">129</span></a>        <span class="c1"># Z axis is longest, followed by Y then X</span>
+</span><span id="AxisAlignmentModel-130"><a href="#AxisAlignmentModel-130"><span class="linenos">130</span></a>
+</span><span id="AxisAlignmentModel-131"><a href="#AxisAlignmentModel-131"><span class="linenos">131</span></a>        <span class="c1"># X axis</span>
+</span><span id="AxisAlignmentModel-132"><a href="#AxisAlignmentModel-132"><span class="linenos">132</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">3</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="AxisAlignmentModel-133"><a href="#AxisAlignmentModel-133"><span class="linenos">133</span></a>        <span class="c1"># Y axis</span>
+</span><span id="AxisAlignmentModel-134"><a href="#AxisAlignmentModel-134"><span class="linenos">134</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span><span class="o">//</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="AxisAlignmentModel-135"><a href="#AxisAlignmentModel-135"><span class="linenos">135</span></a>        <span class="c1"># Z axis</span>
+</span><span id="AxisAlignmentModel-136"><a href="#AxisAlignmentModel-136"><span class="linenos">136</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="AxisAlignmentModel-137"><a href="#AxisAlignmentModel-137"><span class="linenos">137</span></a>
+</span><span id="AxisAlignmentModel-138"><a href="#AxisAlignmentModel-138"><span class="linenos">138</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
+</span><span id="AxisAlignmentModel-139"><a href="#AxisAlignmentModel-139"><span class="linenos">139</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+</span><span id="AxisAlignmentModel-140"><a href="#AxisAlignmentModel-140"><span class="linenos">140</span></a>
+</span><span id="AxisAlignmentModel-141"><a href="#AxisAlignmentModel-141"><span class="linenos">141</span></a>    <span class="nd">@property</span>
+</span><span id="AxisAlignmentModel-142"><a href="#AxisAlignmentModel-142"><span class="linenos">142</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="AxisAlignmentModel-143"><a href="#AxisAlignmentModel-143"><span class="linenos">143</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;@private&quot;&quot;&quot;</span>
+</span><span id="AxisAlignmentModel-144"><a href="#AxisAlignmentModel-144"><span class="linenos">144</span></a>        <span class="k">return</span> <span class="p">()</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Test Model to verify that tomographic projections are not mirrored</p>
+            <div class="docstring"><p>Test Model to verify orientation of tomographic operator.  Useful for
+detecting mirroring issues</p>
 
 <pre><code>Z
 |
@@ -769,108 +496,11 @@ implementations for the unimplemented functions to make custom models</p>
 </div>
 
 
-                            <div id="AxisAlignmentModel.__init__" class="classattr">
-                                        <input id="AxisAlignmentModel.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="name">AxisAlignmentModel</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a href="geometry.html#SphericalGrid">tomosphero.geometry.SphericalGrid</a></span></span>)</span>
-
-                <label class="view-source-button" for="AxisAlignmentModel.__init__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#AxisAlignmentModel.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AxisAlignmentModel.__init__-108"><a href="#AxisAlignmentModel.__init__-108"><span class="linenos">108</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">SphericalGrid</span><span class="p">):</span>
-</span><span id="AxisAlignmentModel.__init__-109"><a href="#AxisAlignmentModel.__init__-109"><span class="linenos">109</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-</span><span id="AxisAlignmentModel.__init__-110"><a href="#AxisAlignmentModel.__init__-110"><span class="linenos">110</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</span><span id="AxisAlignmentModel.__init__-111"><a href="#AxisAlignmentModel.__init__-111"><span class="linenos">111</span></a>
-</span><span id="AxisAlignmentModel.__init__-112"><a href="#AxisAlignmentModel.__init__-112"><span class="linenos">112</span></a>        <span class="c1"># X axis</span>
-</span><span id="AxisAlignmentModel.__init__-113"><a href="#AxisAlignmentModel.__init__-113"><span class="linenos">113</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">3</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="AxisAlignmentModel.__init__-114"><a href="#AxisAlignmentModel.__init__-114"><span class="linenos">114</span></a>        <span class="c1"># Y axis</span>
-</span><span id="AxisAlignmentModel.__init__-115"><a href="#AxisAlignmentModel.__init__-115"><span class="linenos">115</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">r</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">e</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">a</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span><span class="o">//</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="AxisAlignmentModel.__init__-116"><a href="#AxisAlignmentModel.__init__-116"><span class="linenos">116</span></a>        <span class="c1"># Z axis</span>
-</span><span id="AxisAlignmentModel.__init__-117"><a href="#AxisAlignmentModel.__init__-117"><span class="linenos">117</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Do any model setup here</p>
-</div>
-
-
-                            </div>
                             <div id="AxisAlignmentModel.grid" class="classattr">
-                                <div class="attr variable">
-            <span class="name">grid</span>
-
-        
-    </div>
-    <a class="headerlink" href="#AxisAlignmentModel.grid"></a>
-    
-    
-
+                                
                             </div>
                             <div id="AxisAlignmentModel.obj" class="classattr">
-                                <div class="attr variable">
-            <span class="name">obj</span>
-
-        
-    </div>
-    <a class="headerlink" href="#AxisAlignmentModel.obj"></a>
-    
-    
-
-                            </div>
-                            <div id="AxisAlignmentModel.__call__" class="classattr">
-                                        <input id="AxisAlignmentModel.__call__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">__call__</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">coeffs</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="AxisAlignmentModel.__call__-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#AxisAlignmentModel.__call__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AxisAlignmentModel.__call__-119"><a href="#AxisAlignmentModel.__call__-119"><span class="linenos">119</span></a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">):</span>
-</span><span id="AxisAlignmentModel.__call__-120"><a href="#AxisAlignmentModel.__call__-120"><span class="linenos">120</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Generate object from parameters.</p>
-
-<h6 id="arguments">Arguments:</h6>
-
-<ul>
-<li><strong>coeffs (ndarray or tensor):</strong>  array of shape self.coeffs_shape</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>object (tensor):</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="AxisAlignmentModel.coeffs_shape" class="classattr">
-                                        <input id="AxisAlignmentModel.coeffs_shape-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr variable">
-            <span class="name">coeffs_shape</span>
-
-                <label class="view-source-button" for="AxisAlignmentModel.coeffs_shape-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#AxisAlignmentModel.coeffs_shape"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="AxisAlignmentModel.coeffs_shape-122"><a href="#AxisAlignmentModel.coeffs_shape-122"><span class="linenos">122</span></a>    <span class="nd">@property</span>
-</span><span id="AxisAlignmentModel.coeffs_shape-123"><a href="#AxisAlignmentModel.coeffs_shape-123"><span class="linenos">123</span></a>    <span class="k">def</span> <span class="nf">coeffs_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="AxisAlignmentModel.coeffs_shape-124"><a href="#AxisAlignmentModel.coeffs_shape-124"><span class="linenos">124</span></a>        <span class="k">return</span> <span class="p">()</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Shape of coeffs</p>
-</div>
-
-
+                                
                             </div>
                 </section>
     </main>
