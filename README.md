@@ -2,14 +2,14 @@
 
 A 3D/4D volume raytracer in spherical coordinates for arbitrary detector shape implemented in PyTorch.
 
-Check `examples/` for samples demonstrating forward raytracing and retrieval.
+Check the [tutorial](https://evidlo.github.io/tomosphero/tomosphero.html#tutorial) for instruction on using this library or [examples](https://github.com/evidlo/tomosphero/tree/master/examples) for complete samples demonstrating forward raytracing and retrieval.
 
 ## Features
 
 - 3D spherical raytracing with optional support for dynamic volume (4D)
 - implemented purely in PyTorch for easy integration with PyTorch's optimization and machine learning capabilities
 - support for square/circular detectors or other custom detector shapes
-- optional retrieval framework for easily defining loss functions and parametric models (currently supports only static 3D volumes)
+- retrieval framework for easily defining loss functions and parametric models (currently supports only static 3D volumes)
 
 ## Quickstart
 

@@ -11,6 +11,7 @@ from collections.abc import Iterable
 
 from .geometry import SphericalGrid, ConeRectGeom, ConeCircGeom, ViewGeomCollection
 from .raytracer import Operator
+from .loss import RelError
 
 # def add_anim(self, other):
 #     """Merge two Animations by chaining calls to _func and _init_func
@@ -295,3 +296,58 @@ def preview3d(rho, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='
             # roll azimuth dimension
             rotvol[i] = tr.roll(vol, offset if orbit else 0, dims=[-1])
         return op(rotvol)
+
+
+def loss_plot(losses, ax=None):
+    """Plot losses from glide.science.recon.gd()
+
+    Args:
+        losses (dict[list]): loss history for each loss function provided to gd()
+        ax (matplotlib Axes, optional): use existing axes
+
+    returns:
+        matplotlib Figure
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(5, 3))
+    sax = ax.twinx()
+
+    for loss_fn, loss in losses.items():
+
+        # put error axis on right
+        if isinstance(loss_fn, RelError):
+            c = 'tab:red'
+            x = np.arange(len(loss))
+            x = x[~np.isnan(loss)]
+            loss = np.asarray(loss)[~np.isnan(loss)]
+
+            sax.semilogy(x, loss * 100, color=c)
+            from matplotlib.ticker import ScalarFormatter
+            sax.yaxis.set_major_formatter(ScalarFormatter())
+            sax.yaxis.set_minor_formatter(ScalarFormatter())
+            # choose subset of ticklabels so they don't overlap
+            for label in sax.yaxis.get_ticklabels(which='minor')[1::2]:
+                label.set_visible(False)
+            sax.tick_params(axis='y', labelcolor=c, which='both')
+            sax.set_ylabel('absolute % error', color=c)
+            ax.set_title(f"Absolute % Error = {int(loss[-1] * 100)}", color=c)
+
+        # put all other loss plot axes on left
+        else:
+            # c = 'tab:blue'
+            if loss_fn.kind == 'fidelity':
+                # get the final loss for the fidelity term and set plot y limits
+                ax.set_ylim([1e-2 * min(loss), 1e2 * max(loss)])
+            ax.semilogy(loss, label=loss_fn)
+            fig.tight_layout()
+            ax.grid(True)
+            # ax.tick_params(axis='y', labelcolor=c)
+            # ax.set_ylabel('loss', color=c)
+            ax.tick_params(axis='y')
+            ax.set_ylabel('loss')
+
+
+    ax.legend()
+    plt.tight_layout()
+
+    return fig

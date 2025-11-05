@@ -197,9 +197,44 @@ plt.title('Reconstruction')
 <img src="truth.gif"/>
 <img src="recon.gif"/>
 
-As mentioned above, one of the major benefits of autograd frameworks is the flexibility to change any part of the loss function or model with minimal changes to the code.  [Model-based retrievals](#model-retrievals) provides more details on TomoSphero's tools that make working with parametric models and regularizers easier.
+We have successfully reconstructed the object!  Of course, we had ideal measurement conditions with good angular coverage and no noise, but these cases can be handled by the introduction of more sophisticated models and regularization.
+
+As mentioned above, one of the major benefits of autograd frameworks is the flexibility to change any part of the loss function or model with minimal changes to the code.  [Model-based retrievals](#retrieval-framework) provides more details on TomoSphero's tools that make experimenting with parametric models and regularizers easier.
 
 # Miscellaneous
+
+## Retrieval Framework
+
+The retrieval example in the tutorial shows how to 
+
+TomoSphero provides an optional object-oriented framework for conveniently experimenting with new loss functions and tracking loss history in iterative retrieval.  The image below shows an example of a plot created with the loss tracking tools for a problem with three loss terms:
+
+![Loss plot example](loss_example.png)
+
+Below is an example snippet which uses the retrieval framework to implement the following mimization problem:
+
+$$\\hat{\\rho} = \\arg \\min_{\\rho} \\lambda_1 \\cdot ||y - F \\rho||_2^2 + \\lambda_2 \\cdot ||\\text{clip}_{[-\\infty, 0]}(\\rho)||$$
+
+$$\\lambda_1, \\lambda_2 = 1$$
+
+``` python
+# ----- Retrieval -----
+# choose a parametric model for retrieval.
+# FullyDenseModel is the most basic and simply has 1 parameter per voxel
+# see model.py for how to define your own parametric models
+m = FullyDenseModel(grid)
+
+# choose loss functions and regularizers with weights
+# see loss.py for how to define your own loss/regularization
+loss_fns = [1 * SquareLoss(), 1 * NegRegularizer()]
+
+coeffs, rho_hat, losses = gd(op, y, m, lr=1e-1, loss_fns=loss_fns, num_iterations=100)
+
+from tomosphero.plotting import loss_plot
+loss_plot(losses)
+```
+
+![Loss plot example](loss_example2.png)
 
 ## Plotting Utilities
 
@@ -208,8 +243,3 @@ TomoSphero features extensive plotting capabilities with many objects containing
 - `tomosphero.plotting.image_stack` - animate a 3D stack of 2D images
 - `tomosphero.plotting.color_negative` - convert grayscale positive/negative images to red/green RGB images
 - `tomosphero.plotting.preview3d` - generate rotating preview of an object and grid
-
-## Model Retrievals
-
-- foo
-- bar

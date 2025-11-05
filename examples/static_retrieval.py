@@ -54,7 +54,12 @@ m = FullyDenseModel(grid)
 # see loss.py for how to define your own loss/regularization
 loss_fns = [1 * SquareLoss(), 1 * NegRegularizer()]
 
-retrieved = gd(op, meas, m, lr=1e-1, loss_fns=loss_fns, num_iterations=100)
+coeffs, _, losses = gd(op, meas, m, lr=1e-1, loss_fns=loss_fns, num_iterations=100)
+x_hat = m(coeffs)
+
+# generate loss history plot
+from tomosphero.plotting import loss_plot
+loss_plot(losses)
 
 # ----- Plotting -----
 # %% plot
@@ -75,7 +80,7 @@ ani1 = image_stack(preview3d(x, grid), ax=ax1, colorbar=True)
 
 # generate rotating 3D preview of retrieval
 ax2.set_title('Retrieved')
-ani2 = image_stack(preview3d(retrieved[0], grid), ax=ax2, colorbar=True)
+ani2 = image_stack(preview3d(x_hat, grid), ax=ax2, colorbar=True)
 
 ani2.event_source = ani1.event_source
 ani1.save('static_retrieval1.gif', extra_anim=[ani2])
