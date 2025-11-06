@@ -20,8 +20,9 @@ release: lock dist
 	# generate release notes from changelog
 	awk "BEGIN{p=0}; /^$${stripped}/{next}; /---/{p=1;next}; /^$$/{exit}; p {print}" CHANGELOG.rst > TMPNOTES
 	# make github and pypi release
-	gh release create --latest --verify-tag v$(version) dist/pykeepass-$(version)* -F TMPNOTES
-	twine upload -u __token__ dist/pykeepass-$(version)*
+	gh release create --latest --verify-tag v$(version) dist/tomosphero-$(version)* -F TMPNOTES
+	twine upload -u __token__ dist/tomosphero-$(version)*
+	rm TMPNOTES
 
 .PHONY: lock
 lock:
@@ -30,7 +31,7 @@ lock:
 	virtualenv .venv_lock
 	. .venv_lock/bin/activate
 	pip install .[test]
-	python tests/tests.py
+	pytest tomosphero
 	pip freeze > requirements.txt
 
 .PHONY: tag
