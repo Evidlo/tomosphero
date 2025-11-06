@@ -134,16 +134,16 @@ For simplicity, let's take our object to be a sphere with a wedge missing from i
 # compute LOS intersections over grid
 op = Operator(grid, geom, device='cuda')
 # example phantom object - broken torus
-rho = t.ones(grid.shape, device='cuda')
+x = t.ones(grid.shape, device='cuda')
 # sideways pacman object 
-rho[:, :, 3:] = 1
+x[:, :, 3:] = 1
 ```
 
 After instantiation, the operator accepts PyTorch arrays with shape `grid.shape` (and with appropriate `device`) and returns raytraced measurements.
 
 ``` python
 # raytrace and get measurements
-y = op(rho)
+y = op(x)
 # y.shape matches geom.shape
 
 # plot measurements
@@ -155,7 +155,7 @@ anim = image_stack(y, geom)
 
 ## Reconstruction
 
-TomoSphero is designed to be used as a component in [iterative tomographic reconstruction](https://en.wikipedia.org/wiki/Iterative_reconstruction) and provides some basic building blocks for setting up an inverse problem.  Given the synthetically-generated measurement $y$ from the last section, we can use this iterative approach to fit a reconstruction $\\hat{\\rho}$ to our measurements $y$.
+TomoSphero is designed to be used as a component in [iterative tomographic reconstruction](https://en.wikipedia.org/wiki/Iterative_reconstruction) and provides some basic building blocks for setting up an inverse problem.  Given the synthetically-generated measurement $y$ from the last section, we can use this iterative approach to fit a reconstruction $\\hat{x}$ to our measurements $y$.
 
 Compared to more conventional techniques such as [filtered back-projection](https://en.wikipedia.org/wiki/Radon_transform#Reconstruction_approaches), [(S)ART-based methods](https://en.wikipedia.org/wiki/Algebraic_reconstruction_technique), an iterative reconstruction approach built on an autograd framework has many benefits:
 
@@ -170,27 +170,27 @@ Compared to more conventional techniques such as [filtered back-projection](http
 We begin by instantiating a tensor with `requires_grad=True` so PyTorch will track its gradients and set up the optimizer:
 
 ``` python
-rho_hat = t.zeros(grid.shape, requires_grad=True)
-optim = t.optim.Adam([rho_hat], lr=1e-1)
+x_hat = t.zeros(grid.shape, requires_grad=True)
+optim = t.optim.Adam([x_hat], lr=1e-1)
 ```
 
 We will use a very basic least-squares loss function with no model parameterization or regularizers for our reconstruction:
 
-$$\\hat{\\rho} = \\arg \\min_{\\rho} ||y - F \\rho||_2^2$$
+$$\\hat{x} = \\arg \\min_{x} ||y - F x||_2^2$$
 
-where $y$ are measurements, $\\rho$ is the reconstructed object, and $F$ is the tomographic operator.
+where $y$ are measurements, $\\hat{x}$ is the reconstructed object, and $F$ is the tomographic operator.
 
 ``` python
 for i in range(100):
     optim.zero_grad()
     # compute loss and its gradient
-    loss = t.sum((y - op(rho_hat))**2)
+    loss = t.sum((y - op(x_hat))**2)
     loss.backward()
     optim.step()
     
-anim = image_stack(preview3d(rho))
+anim = image_stack(preview3d(x))
 plt.title('Ground Truth')
-anim = image_stack(preview3d(rho_hat))
+anim = image_stack(preview3d(x_hat))
 plt.title('Reconstruction')
 ```
 
@@ -213,7 +213,7 @@ TomoSphero provides an optional object-oriented framework for conveniently exper
 
 Below is an example snippet which uses the retrieval framework to implement the following mimization problem:
 
-$$\\hat{\\rho} = \\arg \\min_{\\rho} \\lambda_1 \\cdot ||y - F \\rho||_2^2 + \\lambda_2 \\cdot ||\\text{clip}_{[-\\infty, 0]}(\\rho)||$$
+$$\\hat{x} = \\arg \\min_{x} \\lambda_1 \\cdot ||y - F x||_2^2 + \\lambda_2 \\cdot ||\\text{clip}_{[-\\infty, 0]}(x)||_1$$
 
 $$\\lambda_1, \\lambda_2 = 1$$
 
@@ -228,7 +228,7 @@ m = FullyDenseModel(grid)
 # see loss.py for how to define your own loss/regularization
 loss_fns = [1 * SquareLoss(), 1 * NegRegularizer()]
 
-coeffs, rho_hat, losses = gd(op, y, m, lr=1e-1, loss_fns=loss_fns, num_iterations=100)
+coeffs, x_hat, losses = gd(op, y, m, lr=1e-1, loss_fns=loss_fns, num_iterations=100)
 
 from tomosphero.plotting import loss_plot
 loss_plot(losses)

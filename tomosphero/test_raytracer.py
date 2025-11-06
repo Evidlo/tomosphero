@@ -44,8 +44,8 @@ def test_operator_static():
     for grid in grids:
         geom = ViewGeom(ray_starts, rays)
         op = Operator(grid, geom)
-        d = tr.ones(grid.shape)
-        result = op(d)
+        x = tr.ones(grid.shape)
+        result = op(x)
         diam = 2 * (grid.size[0][1] - grid.size[0][0])
         ray_success = tr.isclose(result, tr.tensor(diam, dtype=result.dtype))
         fail_str = f"Failure for grid={grid} for ray #s {tr.where(ray_success == False)[0].tolist()}"
@@ -73,12 +73,12 @@ def test_operator_shape():
     ]
 
     geom = ConeRectGeom(shape:=(64, 64), (1, 0, 0))
-    for grid, d in grids:
+    for grid, x in grids:
         op = Operator(grid, geom)
-        result = op(d)
+        result = op(x)
         # shape of channel/time dimensions (i.e. nonspatial dimensions)
-        chan_time = d.shape[:-3]
-        fail_str = f"Failure for grid={grid} and input={d.shape}"
+        chan_time = x.shape[:-3]
+        fail_str = f"Failure for grid={grid} and input={x.shape}"
         assert result.shape == chan_time + shape, f"Invalid shape: {fail_str}"
 
 # raytracer regression bugs
@@ -87,8 +87,8 @@ def test_buggy_los():
     grids = [
         SphericalGrid(shape=(1, 2, 1), size_r=(0, 25)),
     ]
-    # densities
-    ds = [
+    # objects
+    xs = [
         tr.tensor([[[1.0], [0]]]) # upper hemisphere filled
     ]
     u = 0.001
@@ -101,11 +101,11 @@ def test_buggy_los():
     correct_results = [
         50
     ]
-    test_cases = zip(grids, ds, ray_starts, rays, correct_results)
-    for grid, d, ray_start, ray, correct_result in test_cases:
+    test_cases = zip(grids, xs, ray_starts, rays, correct_results)
+    for grid, x, ray_start, ray, correct_result in test_cases:
         geom = ViewGeom(ray_start, ray)
         op = Operator(grid, geom)
-        result = op(d)
+        result = op(x)
         ray_success = tr.isclose(result, tr.tensor(correct_result, dtype=result.dtype))
         fail_str = f"Failure for grid={grid} for ray #s {tr.where(ray_success == False)[0].tolist()}"
         assert tr.isclose(result, tr.tensor(correct_result, dtype=result.dtype), atol=1e-2), fail_str

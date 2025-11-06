@@ -59,7 +59,7 @@ Forward Raytracing
 
 Retrieval
 
-- `model.py` - parameterized models for representing a density.  used in retrieval
+- `model.py` - parameterized models for representing an object.  used in retrieval
 - `loss.py` - some loss functions to be used in retrieval
 - `retrieval.py` - retrieval algorithms
 - `plotting.py` - functions for plotting stacks of images, retrieval losses

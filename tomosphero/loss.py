@@ -18,7 +18,7 @@ class Loss:
     Instantiating Loss objects may be multiplied by a float to set weight (see Usage).
 
     Args:
-        projection_mask (tensor): column densities to mask out when computing loss
+        projection_mask (tensor): projection pixels to mask out when computing loss
         obj_mask (tensor, optional): voxels to mask out when computing loss
         lam (float, optional): loss function scaling (default 1)
         use_grad (bool, optional): whether this loss function's gradient needs to be
@@ -53,13 +53,13 @@ class Loss:
         self.lam = lam
         self.use_grad = use_grad
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """Compute loss
 
         Args:
-            f (Operator): forward function. density→projections
+            f (Operator): forward function. object→projections
             y (tensor): measurements.  shape must match `projection_mask`
-            d (tensor): density to pass through forward function.
+            x (tensor): object to pass through forward function.
                 shape must match `obj_mask`
             c (tensor): coefficients of shape model.coeffs_shape
 
@@ -68,13 +68,13 @@ class Loss:
         """
         raise NotImplemented
 
-    def __call__(self, f, y, d, c):
+    def __call__(self, f, y, x, c):
         """Compute loss, incorporating loss weight and whether pytorch grad is needed
 
         Args:
-            f (Operator): forward function. density→projections
+            f (Operator): forward function. object→projections
             y (tensor): measurements.  shape must match `projection_mask`
-            d (tensor): density to pass through forward function.
+            x (tensor): object to pass through forward function.
                 shape must match `obj_mask`
             c (tensor): coefficients of shape model.coeffs_shape
 
@@ -82,10 +82,10 @@ class Loss:
             loss (float or None)
         """
         if self.use_grad:
-            result = self.compute(f, y, d, c)
+            result = self.compute(f, y, x, c)
         else:
             with t.no_grad():
-                result = self.compute(f, y, d, c)
+                result = self.compute(f, y, x, c)
         return None if result is None else self.lam * result
 
     def __mul__(self, other):
@@ -107,9 +107,9 @@ class SquareLoss(Loss):
 
     kind = 'fidelity'
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """"""
-        result = t.mean(self.projection_mask * (y - f(d * self.obj_mask))**2)
+        result = t.mean(self.projection_mask * (y - f(x * self.obj_mask))**2)
         return result
 
 
@@ -118,9 +118,9 @@ class SquareRelLoss(Loss):
 
     kind = 'fidelity'
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """"""
-        obs = f(d * self.obj_mask)
+        obs = f(x * self.obj_mask)
 
         # rel_err = (y - obs) / y
         # rel_err = rel_err.nan_to_num() * self.projection_mask
@@ -137,48 +137,48 @@ class AbsLoss(Loss):
 
     kind = 'fidelity'
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """"""
-        result = t.mean(self.projection_mask * (y - f(d * self.obj_mask)).abs())
+        result = t.mean(self.projection_mask * (y - f(x * self.obj_mask)).abs())
         return result
 
 
 class CheaterLoss(Loss):
-    """L2 loss directly over density ground truth"""
+    """L2 loss directly over object ground truth"""
 
     # do not use for gradient descent
     kind = 'oracle'
 
-    def __init__(self, density_truth, *args, **kwargs):
+    def __init__(self, truth, *args, **kwargs):
         """Setup loss
 
         Args:
-            density_truth (tensor): ground truth density
+            truth (tensor): ground truth object
             *args: position args passed to Loss
             **kwargs: keyword args passed to Loss
         """
 
-        self.density_truth = density_truth
+        self.truth = truth
         super().__init__(**kwargs)
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """"""
-        return t.mean(self.obj_mask * (d - self.density_truth)**2)
+        return t.mean(self.obj_mask * (x - self.truth)**2)
 
 
 class NegRegularizer(Loss):
     """Mean of negative voxels"""
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """"""
-        return t.mean(t.abs(self.obj_mask * d.clip(max=0)))
+        return t.mean(t.abs(self.obj_mask * x.clip(max=0)))
 
 
 class NegSumRegularizer(Loss):
     """Sum of negative voxels"""
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """"""
-        return t.sum(t.abs(self.obj_mask * d.clip(max=0)))
+        return t.sum(t.abs(self.obj_mask * x.clip(max=0)))
 
 
 class RelError(Loss):
@@ -207,14 +207,14 @@ class RelError(Loss):
 
         super().__init__(**kwargs)
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """
         Args:
-            f (function): forward operator from density to measurements
+            f (function): forward operator from object to measurements
             y (tensor): actual noisy measurements
-            d (tensor): candidate reconstructed density
+            x (tensor): candidate reconstructed object
             c (tensor): coefficients for model.  low-rank representation of
-                density
+                object
 
         Returns:
             loss (float)
@@ -222,11 +222,11 @@ class RelError(Loss):
         # only perform computation every `interval` calls to save on compute time
         # otherwise, return NaN
         if self.n % self.interval == 0:
-            rel_err = t.abs(self.truth - d) / self.truth
+            rel_err = t.abs(self.truth - x) / self.truth
             if self.mode == 'mean':
-                result = rel_err[self.truth_cart > 25].mean()
+                result = rel_err[self.truth > 25].mean()
             elif self.mode == 'max':
-                result = rel_err[self.truth_cart > 25].max()
+                result = rel_err[self.truth > 25].max()
             else:
                 raise ValueError("Invalid mode")
         else:
@@ -239,30 +239,30 @@ class RelError(Loss):
 class ReqErrOld(Loss):
     """25 atoms/cc region mean absolute percent error"""
 
-    def __init__(self, density_truth, mode='max', interval=10, **kwargs):
+    def __init__(self, truth, mode='max', interval=10, **kwargs):
         """Setup loss
 
         Args:
-            density_truth (tensor): ground truth density to compare against
+            truth (tensor): ground truth object to compare against
             mode (str): Collapse relative error for all voxels into single value. Either 'mean' or 'max'
             interval (int): compute result every `interval` iterations to save compute time
         """
         self.use_grad = False
-        self.density_truth = density_truth
+        self.truth = truth
         self.interval = interval
         self.mode = mode
         self.n = 0
 
         super().__init__(**kwargs)
 
-    def compute(self, f, y, d, c):
-        """"""
+    def compute(self, f, y, x, c):
+        """@private"""
         if self.n % self.interval == 0:
-            rel_err = t.abs(self.density_truth - d) / self.density_truth
+            rel_err = t.abs(self.truth - x) / self.truth
             if self.mode == 'mean':
-                result = rel_err[self.density_truth > 25].mean()
+                result = rel_err[self.truth > 25].mean()
             elif self.mode == 'max':
-                result = rel_err[self.density_truth > 25].max()
+                result = rel_err[self.truth > 25].max()
             else:
                 raise ValueError("Invalid mode")
         else:
@@ -315,12 +315,12 @@ class IRLSLoss(Loss):
 
         self.n = 0
 
-    def compute(self, f, y, d, c):
+    def compute(self, f, y, x, c):
         """"""
         self.n += 1
 
         # absolute measurement residuals
-        res_abs = self.projection_mask * (y - f(d * self.volume_mask)).abs()
+        res_abs = self.projection_mask * (y - f(x * self.obj_mask)).abs()
         weight = 1 / (self.noise_var + res_abs**2)
         # weight = 1
         weight = 1
@@ -329,29 +329,3 @@ class IRLSLoss(Loss):
         #     import ipdb
         #     ipdb.set_trace()
         return result
-
-class SphHarmL1Regularizer(Loss):
-    """Compute loss with custom function"""
-
-    kind = 'regularizer'
-
-    def __init__(self, model, k=2.5, device=None, **kwargs):
-        """
-        Args:
-            model (SphHarmSplineModel): specific sph. harm. spline model
-            k (float): exponential decay to normalize coefficients
-            device (None, str, or torch.device): device for returned array
-        """
-        self.model = model
-        self.k = k
-        self.device = device
-
-        super().__init__(**kwargs)
-
-    def compute(self, f, y, d, c):
-        """"""
-        # x = self.model.sph_coeffs(c) / self.model.grid.r.to(self.model.device)**-self.k
-        # normalize by A00 term
-        x = self.model.sph_coeffs(c) / self.model.sph_coeffs(c)[..., 0, :]
-        # x = self.model.sph_coeffs(c) / self.model.sph_coeffs(c)[..., 0, 0]
-        return x.abs().mean()

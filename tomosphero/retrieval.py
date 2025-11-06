@@ -30,7 +30,7 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
 
     Minimizes sum of weighted loss functions with respect to model coefficients:
 
-    e.g. `loss_fn1(f, y, d, coeffs) + loss_fn2(f, y, d, coeffs) + ...`
+    e.g. `loss_fn1(f, y, x, coeffs) + loss_fn2(f, y, x, coeffs) + ...`
 
     Use Ctrl-C to stop iterations early and return best result so far.
 
@@ -42,7 +42,7 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
             should have `requires_grad=True`.  defaults to `t.ones(model.coeffs_shape)`
         num_iterations (int): number of gradient descent iterations
         loss_fns (list[science.Loss]): custom loss functions which
-            accept (f, y, density, coeffs) as args.  Losses are summed
+            accept (f, y, object, coeffs) as args.  Losses are summed
         optim (pytorch Optimizer, optional): optimizer.  optional.  defaults to 'Adam'
         optim_vars (list[tensor], optional): list of variables to optimize. defaults to
             internal `coeffs`
@@ -94,11 +94,11 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
         for _ in (pbar := tqdm(range(num_iterations), disable=not progress_bar)):
             optim.zero_grad()
 
-            density = model(coeffs)
+            x = model(coeffs)
 
             tot_loss = f_stat = r_stat = 0
             for loss_fn in loss_fns:
-                loss = loss_fn(f, y, density, coeffs)
+                loss = loss_fn(f, y, x, coeffs)
                 if loss_fn.use_grad and not loss_fn.kind == 'oracle':
                     tot_loss += loss
                 if loss_fn.kind == 'oracle' and not math.isnan(loss):

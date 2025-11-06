@@ -654,7 +654,7 @@ class Operator:
         itype (torch dtype): type specification for ints
         device (str): torch device where tensors are stored
         pdevice (str): torch device where tensors are initialized
-        dynamic (bool): force whether input density is evolving (4D) or static (3D)
+        dynamic (bool): force whether input object is evolving (4D) or static (3D)
         debug (bool): enable debug printing
         debug_los (tuple, None): choose LOS to debug
         _compute (bool): disable actual computation of LOS for plotting purposes
@@ -690,12 +690,12 @@ class Operator:
         # if dynamic and not isinstance(geom, ViewGeomCollection):
         #     raise ValueError("geom must be ViewGeomCollection instance when dynamic=True")
 
-    def __call__(self, density):
-        """Lookup up density indices for all rays and compute
+    def __call__(self, x):
+        """Lookup up object indices for all rays and compute
         inner-product with intersection length
 
         Args:
-            density (tensor): 3D tensor of shape `grid.shape` if dynamic=False.  4D tensor
+            x (tensor): 3D tensor of shape `grid.shape` if dynamic=False.  4D tensor
                 with first dimension equal to length of geom.shape[0] if dynamic=True
 
         Returns:
@@ -704,23 +704,24 @@ class Operator:
         r, e, a = self.regs
         # if dynamic object:
         if self.grid.dynamic or self.dynamic:
-            t = tr.arange(len(density))[:, None, None, None]
+            t = tr.arange(len(x))[:, None, None, None]
         else:
             t = Ellipsis
 
-        result = density[t, r, e, a]
+        result = x[t, r, e, a]
         result *= self.lens
         result = result.sum(axis=-1)
         return result
 
     def T(self, line_integrations):
-        """Adjoint of raytrace line integration operator.  Back projects line integrals to a density
+        """Adjoint of raytrace line integration operator.
+        Back projects line integrals to an object
 
         Args:
             line_integrations (tensor): integrated lines of sight of shape `geom.shape`
 
         Returns:
-            density (tensor): 3D tensor of shape `grid.shape` if dynamic=False.  4D tensor
+            x (tensor): 3D tensor of shape `grid.shape` if dynamic=False.  4D tensor
                 with first dimension equal to length of geom.shape[0] if dynamic=True
 
         Example shapes:
@@ -731,18 +732,18 @@ class Operator:
         """
         r, e, a = self.regs
 
-        density = tr.zeros(
+        x = tr.zeros(
             self.grid.shape,
             dtype=line_integrations.dtype, device=self.device
         )
 
-        # if dynamic density
-        if density.ndim == 4:
+        # if dynamic object
+        if x.ndim == 4:
             raise NotImplementedError
         else:
             # len_sums = self.lens.sum(dim=-1, keepdim=True)
             # len_sums[len_sums==0] = 1
-            density.index_put_(
+            x.index_put_(
                 (r, e, a),
                 line_integrations[..., None] *
                 self.lens,
@@ -752,7 +753,7 @@ class Operator:
                 accumulate=True
             )
 
-        return density
+        return x
 
 
     def __repr__(self):
@@ -772,8 +773,8 @@ class Operator:
             plot_grid (bool): plot grid
 
         Returns:
-            matplotlib Animation if dynamic density or multiple vantages or
-            matplotlib Axes if static density and single vantage
+            matplotlib Animation if dynamic object or multiple vantages or
+            matplotlib Axes if static object and single vantage
         """
 
         grid = self.grid if grid is None else grid

@@ -208,7 +208,7 @@ def sph2cart(rea):
     return xyz
 
 
-def preview3d(rho, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='cpu'):
+def preview3d(x, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='cpu'):
     """Generate 3D animation of a static object by making circular orbit around object
 
     The number of frames is equal to the number of time bins (dynamic object), or number
@@ -218,7 +218,7 @@ def preview3d(rho, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='
     rotating the object by one azimuth bin, greatly reducing memory and CPU overhead.
 
     Args:
-        rho (tensor): object to preview of shape (width, height, depth) or
+        x (tensor): object to preview of shape (width, height, depth) or
             (width, height, depth, num_channels) for multi-channel measurement
         grid (SphericalGrid): grid where object is defined
         shape (tuple[int]): shape of output images
@@ -256,9 +256,9 @@ def preview3d(rho, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='
         returned: (50, 256, 256)
     """
 
-    if not rho.ndim in (3, 4, 5):
-        raise ValueError(f"Invalid shape for object: {tuple(rho.shape)}")
-    if not (rho.ndim - len(grid.shape)) <= 1:
+    if not x.ndim in (3, 4, 5):
+        raise ValueError(f"Invalid shape for object: {tuple(x.shape)}")
+    if not (x.ndim - len(grid.shape)) <= 1:
         # object may have 1 more dimension than grid if channels are present
         raise ValueError("object/grid shape mismatch")
 
@@ -278,10 +278,10 @@ def preview3d(rho, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='
     op = Operator(grid, geom)
 
     # if multiple channels, process each separately
-    if rho.ndim == len(grid.shape) + 1:
-        rotvol = tr.empty((grid.shape.a, *grid.shape[-3:], rho.shape[-1]))
+    if x.ndim == len(grid.shape) + 1:
+        rotvol = tr.empty((grid.shape.a, *grid.shape[-3:], x.shape[-1]))
         for i, offset in enumerate(offsets):
-            vol = rho[offset] if grid.dynamic else rho
+            vol = x[offset] if grid.dynamic else x
             # roll azimuth dimension
             rotvol[i] = tr.roll(vol, offset if orbit else 0, dims=[-2])
         results = []
@@ -289,10 +289,10 @@ def preview3d(rho, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='
             results.append(op(chan))
         return tr.stack(results, axis=-1)
     # only a single channel
-    elif rho.ndim == len(grid.shape):
+    elif x.ndim == len(grid.shape):
         rotvol = tr.empty((len(offsets), *grid.shape[-3:]))
         for i, offset in enumerate(offsets):
-            vol = rho[offset] if grid.dynamic else rho
+            vol = x[offset] if grid.dynamic else x
             # roll azimuth dimension
             rotvol[i] = tr.roll(vol, offset if orbit else 0, dims=[-1])
         return op(rotvol)

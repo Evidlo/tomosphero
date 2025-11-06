@@ -98,10 +98,10 @@ plt.close()
 fig, ax = plt.subplots(figsize=(2, 2))
 grid = SphericalGrid((30, 30, 30), size_r=(0, 1))
 op = Operator(grid, geom)
-rho = t.zeros(grid.shape)
-# rho[12:15, 12:18, 0:26] = 1
-rho[:, :, 3:] = 1
-y = op(rho)
+x = t.zeros(grid.shape)
+# x[12:15, 12:18, 0:26] = 1
+x[:, :, 3:] = 1
+y = op(x)
 from tomosphero.plotting import image_stack, preview3d
 ax.set_aspect('equal')
 fig.tight_layout()
@@ -110,12 +110,12 @@ anim.save('api_meas.gif', fps=15)
 
 # %% recon
 
-rho_hat = t.zeros(grid.shape, requires_grad=True)
-optim = t.optim.Adam([rho_hat], lr=1e-1)
+x_hat = t.zeros(grid.shape, requires_grad=True)
+optim = t.optim.Adam([x_hat], lr=1e-1)
 
 for i in (bar:=tqdm(range(100))):
     optim.zero_grad()
-    loss = t.sum((y - op(rho_hat))**2)
+    loss = t.sum((y - op(x_hat))**2)
     loss.backward()
     bar.set_description(str(loss))
     optim.step()
@@ -124,12 +124,12 @@ for i in (bar:=tqdm(range(100))):
 
 plt.close()
 fig, ax = plt.subplots(figsize=(2, 2))
-anim = image_stack(preview3d(rho, grid), ax=ax)
+anim = image_stack(preview3d(x, grid), ax=ax)
 plt.title('Ground Truth')
 anim.save('truth.gif')
 
 plt.close()
 fig, ax = plt.subplots(figsize=(2, 2))
-anim = image_stack(preview3d(rho_hat, grid), ax=ax)
+anim = image_stack(preview3d(x_hat, grid), ax=ax)
 plt.title('Reconstruction')
 anim.save('recon.gif')
