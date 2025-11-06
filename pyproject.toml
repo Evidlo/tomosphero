@@ -1,6 +1,6 @@
 [project]
 name = "tomosphero"
-version = "0.0.1"
+version = "0.0.2"
 description = "PyTorch volume raytracer in spherical coordinates"
 dependencies = [
   "torch>=1.12.1",
