@@ -53,6 +53,6 @@ docs:
 		-t template/ \
 		--footer-text "tomosphero ${version}" \
 		--math \
-		--logo "/logo.svg"
+		--logo "https://evan.widloski.com/tomosphero/logo.svg"
 	touch docs/.nojekyll
-	# ghp-import -f -p -b docs docs
+	ghp-import -f -p -b docs docs
