@@ -52,6 +52,7 @@ docs:
 		'!tomosphero.test_' \
 		-t template/ \
 		--footer-text "tomosphero ${version}" \
-		--math
+		--math \
+		--logo "/logo.svg"
 	touch docs/.nojekyll
 	# ghp-import -f -p -b docs docs

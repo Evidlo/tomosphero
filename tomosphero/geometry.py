@@ -263,20 +263,30 @@ class SphericalGrid:
         return artists
 
     @property
-    def coords(self) -> dict[str, tr.Tensor]:
+    def _coords(self) -> dict[str, tr.Tensor]:
         """"""
-        if self.dynamic:
-            return {'t':self.t, 'r':self.r, 'e':self.e, 'a':self.a}
-        else:
-            return {'r':self.r, 'e':self.e, 'a':self.a}
+        c = {'r':self.r, 'e':self.e, 'a':self.a}
+        return {'t':self.t} | c if self.dynamic else c
+
+    @property
+    def _coords_b(self) -> dict[str, tr.Tensor]:
+        """"""
+        c = {'r':self.r_b, 'e':self.e_b, 'a':self.a_b}
+        return {'t':self.t} | c if self.dynamic else c
 
     @property
     def mesh(self):
         """tensor(float): Dense 3D or 4D (if dynamic) mesh of grid coordinates
         of shape (N_t, N_r, N_e, N_a, 4) dynamic or (N_r, N_e, N_a, 3) static
         """
+        return tr.stack(tr.meshgrid(list(self._coords.values()), indexing='ij'), dim=-1)
 
-        return tr.stack(tr.meshgrid(list(self.coords.values()), indexing='ij'), dim=-1)
+    @property
+    def mesh_b(self):
+        """tensor(float): Dense 3D or 4D (if dynamic) mesh of grid coordinate boundaries
+        of shape (N_t, N_r+1, N_e+1, N_a+1, 4) dynamic or (N_r+1, N_e+1, N_a+1, 3) static
+        """
+        return tr.stack(tr.meshgrid(list(self._coords_b.values()), indexing='ij'), dim=-1)
 
     @property
     def nptime(self):

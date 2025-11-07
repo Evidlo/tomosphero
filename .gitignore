@@ -8,6 +8,8 @@ tmp/
 build
 htmlcov
 
+dist/
+
 __pycache__/
 **/*.egg-info
 **/__MACOSX

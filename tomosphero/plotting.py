@@ -195,15 +195,17 @@ def sph2cart(rea):
     Returns:
         cartesian (tuple): cartesian coordinates (x, y, z)
     """
-    r, e, a = np.moveaxis(rea, -1, 0)
+    tnp = tr if type(rea[0]) is tr.Tensor else np
 
-    xyz = np.empty_like(rea)
+    r, e, a = tnp.moveaxis(rea, -1, 0)
+
+    xyz = tnp.empty_like(rea)
 
     pre_selector = ((slice(None),) * xyz.ndim)[:-1]
 
-    xyz[(*pre_selector, 0)] = r * np.sin(e) * np.cos(a)
-    xyz[(*pre_selector, 1)] = r * np.sin(e) * np.sin(a)
-    xyz[(*pre_selector, 2)] = r * np.cos(e)
+    xyz[(*pre_selector, 0)] = r * tnp.sin(e) * tnp.cos(a)
+    xyz[(*pre_selector, 1)] = r * tnp.sin(e) * tnp.sin(a)
+    xyz[(*pre_selector, 2)] = r * tnp.cos(e)
 
     return xyz
 
