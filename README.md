@@ -38,7 +38,7 @@ Note that TomoSphero is a *volumetric* raytracer (i.e. not occlusions, shading, 
 
 ## Memory Usage
 
-This library was uses only PyTorch array operations for implementation simplicity and speed at the expense of memory consumption.  The peak memory usage in GB can be approximated with `examples/memory_usage.py`
+This library uses only PyTorch array operations for implementation simplicity and speed at the expense of memory consumption.  The peak memory usage in GB can be approximated with `examples/memory_usage.py`
 
 ``` bash
 $ python examples/memory_usage.py

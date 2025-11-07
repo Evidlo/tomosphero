@@ -15,7 +15,7 @@ Let's get started! 🮲🮳
 
 The grid defines the physical extent and shape of the object to be raytraced or reconstructed.  There are several ways to instantiate grids with the `SphericalGrid` class in TomoSphero:
 
-By shape and size.  e.g. for a spherical grid with 30 bins in radius/elevation/azimuth and outer radius of 10 (arbitrary) length units.
+By shape and size.  e.g. for a spherical grid with 30 bins in radius/elevation/azimuth and outer radius of 1 (arbitrary) length units.
 
 ``` python
 from tomosphero import SphericalGrid
@@ -30,10 +30,10 @@ grid = SphericalGrid(
 grid.plot()
 ```
 
-![An origin-centered grid with outer radius 10](api_grid.png)
+![An origin-centered grid with outer radius 1](api_grid.png)
 
 Grids do not need to cover the full extent of a sphere.  Below is an example of a grid defined over a small spherical wedge.
-This can be useful for reconstructions on a local region of a planetary atmosphere atmosphere.
+This can be useful for reconstructions on a local region of a planetary atmosphere.
 
 ``` python
 from numpy import pi
@@ -77,7 +77,7 @@ A view geometry defines the lines of sight associated with each pixel in a senso
 - `tomosphero.geometry.ConeRectGeom` - Conventional rectangular camera sensor
   - lines of sight converge to single point at detector location
 - `tomosphero.geometry.ParallelGeom` - Parallel lines of sight. Common geometry for medical imaging
-- `tomosphero.geometry.ConeCircGeom` - Exotic circular virtual camera geometry used by the [Carruthers spacecraft]()
+- `tomosphero.geometry.ConeCircGeom` - Exotic circular virtual camera geometry used by the [Carruthers spacecraft](https://en.wikipedia.org/wiki/Carruthers_Geocorona_Observatory)
 - `tomosphero.geometry.ViewGeom` - Base class for specifying arbitrary LOS. Sensor geometry may have any dimension/shape
   
 
@@ -97,7 +97,7 @@ geom.plot()
 
 ![Rectangular sensor view geometry](api_conerectgeom.png)
 
-View geometries may be composed by addition to produce scanning orbits (e.g. circular/helical orbits),  The result of this operation is a `tomosphero.geometry.ViewGeomCollection` object, which behaves much like a regular `ViewGeom`.
+View geometries may be composed by addition to produce scanning orbits (e.g. circular/helical orbits).  The result of this operation is a `tomosphero.geometry.ViewGeomCollection` object, which behaves much like a regular `ViewGeom`.
 
 ``` python
 import numpy as np
@@ -131,10 +131,13 @@ Let's first begin by creating an `Operator` and defining a 3D object in a PyTorc
 For simplicity, let's take our object to be a sphere with a wedge missing from it:
 
 ``` python
+import torch as t
+from tomosphero import Operator
+
 # compute LOS intersections over grid
 op = Operator(grid, geom, device='cuda')
 # example phantom object - broken torus
-x = t.ones(grid.shape, device='cuda')
+x = t.zeros(grid.shape, device='cuda')
 # sideways pacman object 
 x[:, :, 3:] = 1
 ```
@@ -155,14 +158,14 @@ anim = image_stack(y, geom)
 
 ## Reconstruction
 
-TomoSphero is designed to be used as a component in [iterative tomographic reconstruction](https://en.wikipedia.org/wiki/Iterative_reconstruction) and provides some basic building blocks for setting up an inverse problem.  Given the synthetically-generated measurement $y$ from the last section, we can use this iterative approach to fit a reconstruction $\\hat{x}$ to our measurements $y$.
+TomoSphero is designed to be used as a component in [iterative tomographic reconstruction](https://en.wikipedia.org/wiki/Iterative_reconstruction) and provides some basic building blocks for setting up an inverse problem.  Given the synthetically generated measurement $y$ from the last section, we can use this iterative approach to fit a reconstruction $\\hat{x}$ to our measurements $y$.
 
 Compared to more conventional techniques such as [filtered back-projection](https://en.wikipedia.org/wiki/Radon_transform#Reconstruction_approaches), [(S)ART-based methods](https://en.wikipedia.org/wiki/Algebraic_reconstruction_technique), an iterative reconstruction approach built on an autograd framework has many benefits:
 
 - Works with any view geometry
   - Filtered back-projection techniques are generally limited to circular or helical orbits
 - Availability of different optimizers
-  - Any PyTorch optimizer] may be used interchangeably in TomoSphero.  Some optimizers may handle certain problems better than others when it comes to e.g. nonconvexity.
+  - Any [PyTorch optimizer](https://docs.pytorch.org/docs/stable/optim.html#algorithms) may be used interchangeably in TomoSphero.  Some optimizers may handle certain problems better than others when it comes to e.g. nonconvexity.
 - Rapid testing of different cost functions and regularizers
   - (S)ART-based methods are hard coded to a specific loss function
   - Iterative autograd techniques can work with any differentiable loss/regularizers
@@ -170,7 +173,7 @@ Compared to more conventional techniques such as [filtered back-projection](http
 We begin by instantiating a tensor with `requires_grad=True` so PyTorch will track its gradients and set up the optimizer:
 
 ``` python
-x_hat = t.zeros(grid.shape, requires_grad=True)
+x_hat = t.zeros(grid.shape, device='cuda', requires_grad=True)
 optim = t.optim.Adam([x_hat], lr=1e-1)
 ```
 
@@ -181,6 +184,9 @@ $$\\hat{x} = \\arg \\min_{x} ||y - F x||_2^2$$
 where $y$ are measurements, $\\hat{x}$ is the reconstructed object, and $F$ is the tomographic operator.
 
 ``` python
+import matplotlib.pyplot as plt
+from tomosphero.plotting import preview3d, image_stack
+
 for i in range(100):
     optim.zero_grad()
     # compute loss and its gradient
@@ -205,19 +211,21 @@ As mentioned above, one of the major benefits of autograd frameworks is the flex
 
 ## Retrieval Framework
 
-The retrieval example in the tutorial shows how to 
-
 TomoSphero provides an optional object-oriented framework for conveniently experimenting with new loss functions and tracking loss history in iterative retrieval.  The image below shows an example of a plot created with the loss tracking tools for a problem with three loss terms:
 
 ![Loss plot example](loss_example.png)
 
-Below is an example snippet which uses the retrieval framework to implement the following mimization problem:
+Below is an example snippet which uses the retrieval framework to implement the following minimization problem:
 
 $$\\hat{x} = \\arg \\min_{x} \\lambda_1 \\cdot ||y - F x||_2^2 + \\lambda_2 \\cdot ||\\text{clip}_{[-\\infty, 0]}(x)||_1$$
 
 $$\\lambda_1, \\lambda_2 = 1$$
 
 ``` python
+from tomosphero.model import FullyDenseModel
+from tomosphero.retrieval import gd
+from tomosphero.loss import SquareLoss, NegRegularizer
+
 # ----- Retrieval -----
 # choose a parametric model for retrieval.
 # FullyDenseModel is the most basic and simply has 1 parameter per voxel
@@ -228,7 +236,8 @@ m = FullyDenseModel(grid)
 # see loss.py for how to define your own loss/regularization
 loss_fns = [1 * SquareLoss(), 1 * NegRegularizer()]
 
-coeffs, x_hat, losses = gd(op, y, m, lr=1e-1, loss_fns=loss_fns, num_iterations=100)
+coeffs, _, losses = gd(op, y, m, lr=1e-1, loss_fns=loss_fns, num_iterations=100)
+x_hat = m(coeffs)
 
 from tomosphero.plotting import loss_plot
 loss_plot(losses)
