@@ -1,17 +1,23 @@
+<img src="logo.svg" width="200px"/>
+
 # TomoSphero
 
-A 3D/4D volume raytracer in spherical coordinates for arbitrary detector shape implemented in PyTorch.
+A differentiable 3D/4D volumetric tomographic projector in spherical coordinates.
 
 Check the [tutorial](https://evidlo.github.io/tomosphero/tomosphero.html#tutorial) for instruction on using this library or [examples](https://github.com/evidlo/tomosphero/tree/master/examples) for complete samples demonstrating forward raytracing and retrieval.
 
 ## Features
+
+TomoSphero was originally created for tomographic retrieval of planetary atmospheres, but is designed to work for any problem defined on a spherical grid.  Some of its features are
 
 - 3D spherical raytracing with optional support for dynamic volume (4D)
 - implemented purely in PyTorch for easy integration with PyTorch's optimization and machine learning capabilities
 - support for square/circular detectors or other custom detector shapes
 - retrieval framework for easily defining loss functions and parametric models (currently supports only static 3D volumes)
 
-## Quickstart
+Note that TomoSphero is a *volumetric* raytracer (i.e. not occlusions, shading, etc.).
+
+## Installation and Quickstart
 
     pip install tomosphero
     git clone https://github.com/evidlo/tomosphero && cd tomosphero
