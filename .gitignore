@@ -19,3 +19,7 @@ examples/*png
 examples/*gif
 **/.*json
 docs/
+
+# joss
+jats/
+paper.pdf

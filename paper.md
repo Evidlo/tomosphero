@@ -40,7 +40,6 @@ Tomography is a method for determining the internal structure of objects from a 
 $$y = F x + \epsilon$$
 
 where $y$ is a collection of measurements,  $F$ is a linear projection operator, $x$ is the object under study, and $\epsilon$ is noise.
-])
 
 Tomography has found application in a vast number of domains such as medical imaging, crystallography, and remote sensing, utilizing modalities like X-ray, ultraviolet (UV), ultrasound, seismic waves, and many more.  In this paper we discuss TomoSphero, a Python library for planetary and solar tomography.
 

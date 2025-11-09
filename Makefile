@@ -56,3 +56,10 @@ docs:
 		--logo "https://evan.widloski.com/tomosphero/logo.svg"
 	touch docs/.nojekyll
 	ghp-import -f -p -b docs docs
+
+.PHONY: joss
+joss:
+	podman run -it \
+		--volume ./:/data \
+		--env JOURNAL=joss \
+		docker.io/openjournals/inara
