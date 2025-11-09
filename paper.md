@@ -46,18 +46,19 @@ Tomography has found application in a vast number of domains such as medical ima
 
 Fast tomographic reconstruction algorithms that implement explicit inversion formulas typically work only for specific view geometries (such as circular or helical view geometry) and are referred to as _filtered back projection_ (FBP) algorithms [@fbp].  However, some situations (like an orbiting spacecraft) necessitate more complicated measurement paths than are allowed by FBP-type algorithms.  For these situations requiring more flexible view geometries where an exact inverse solution is not available, _iterative reconstruction_ (IR) algorithms prevail, usually solving an optimization problem of the form
 
-$$hat(bold(rho)) = arg min_bold(rho) ||bold(y) - F bold(rho)||_2^2 + ...$$
+$$\hat{x} = \arg \min_c \lVert y - F M(c) \rVert_2^2 + \mathcal{R}(...) + ...$$
+
+where $M$ is a parametric model for the object under construction and $\mathcal{R}$ is a regularization term.
 
 Examples include SIRT [@sirt], TV-MIN [@tvmin], ART [@art], CGLS [@cgls], Plug-and-play [@plugandplay] and many others.
-  These algorithms obtain synthetic projections of a candidate object using a tomographic operator (sometimes called a _raytracer_) that simulates waves traveling through the object medium.  They produce a reconstruction by repeatedly tweaking the candidate object to minimize discrepancy between synthetic and actual projections, and they stand to benefit the most from a fast operator implementation. 
+These algorithms obtain synthetic projections of a candidate object using a tomographic operator (sometimes called a _raytracer_) that simulates waves traveling through the object medium.  They produce a reconstruction by repeatedly tweaking the candidate object to minimize discrepancy between synthetic and actual projections, and they stand to benefit the most from a fast operator implementation. 
   
-  TomoSphero is parallelized and GPU-enabled, and its speed has been benchmarked as described in the companion paper.
-  In cases where a simultaneous computation for every pixel of every measurement would consume more memory than is available, some algorithms operate _out-of-core_, where they parallelize as many tasks as will fit into available memory, then serially queue the remaining tasks for processing after current tasks are complete.  TomoSphero is not capable of out-of-core operation.
+TomoSphero is parallelized and GPU-enabled, and its speed has been benchmarked as described in the companion paper.
+In cases where a simultaneous computation for every pixel of every measurement would consume more memory than is available, some algorithms operate _out-of-core_, where they parallelize as many tasks as will fit into available memory, then serially queue the remaining tasks for processing after current tasks are complete.  TomoSphero is not capable of out-of-core operation.
 
-  Another consideration in tomographic reconstruction is the choice of grid type for discretization of the reconstructed object.  Most publications consider a regular rectilinear grid, which is a reasonable choice when the underlying structure of the object is completely unknown or the scale of features is uniform throughout the object.  The primary focus of TomoSphero is in the domain of atmospheric tomography, where regular spherical grids are well-suited for modeling solar and planetary atmospheres that exhibit spherical symmetries [@solartomography1] [@solartomography2].
+Another consideration in tomographic reconstruction is the choice of grid type for discretization of the reconstructed object.  Most publications consider a regular rectilinear grid, which is a reasonable choice when the underlying structure of the object is completely unknown or the scale of features is uniform throughout the object.  The primary focus of TomoSphero is in the domain of atmospheric tomography, where regular spherical grids are well-suited for modeling solar and planetary atmospheres that exhibit spherical symmetries [@solartomography1] [@solartomography2].
 
-  Many reconstruction algorithms
-rely on gradient-based optimization to solve for an object whose structure corresponds to measurement data.
+Many reconstruction algorithms rely on gradient-based optimization to solve for an object whose structure corresponds to measurement data.
 Automatic differentiation (_autograd_) is a class of techniques that convert an arbitrary expression into a computational graph of simpler functions, then compute the overall derivative by applying chain rule at each node.  Modern machine learning libraries such as PyTorch [@pytorch] and Jax [@jax] provide such capabilities for building this computational graph.  TomoSphero is implemented on top of PyTorch and its autograd capabilities enable rapid prototyping of different parametric models and regularizations.
 
 TomoSphero development was motivated by the [Carruthers Geocorona Observatory](https://science.nasa.gov/mission/carruthers-geocorona-observatory/), a spacecraft containing UV imagers which will survey the Earth's exosphere.
