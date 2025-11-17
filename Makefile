@@ -63,3 +63,9 @@ joss:
 		--volume ./:/data \
 		--env JOURNAL=joss \
 		docker.io/openjournals/inara
+
+.PHONY: apj
+apj:
+	mkdir apj
+	cp main.pdf apj
+	cp figures/* apj
