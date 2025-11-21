@@ -6,11 +6,9 @@ import torch as t
 import matplotlib.pyplot as plt
 import matplotlib
 
-from tomosphero import SphericalGrid, ConeRectGeom, ConeCircGeom, Operator
-from tomosphero.plotting import image_stack, preview3d
-from tomosphero.model import FullyDenseModel
-from tomosphero.retrieval import gd
-from tomosphero.loss import SquareLoss, NegRegularizer
+from tomosphero import SphericalGrid, ConeCircGeom, Operator
+
+device = "cuda:0" if t.cuda.is_available() else "cpu"
 
 # ----- Setup -----
 
@@ -18,8 +16,7 @@ from tomosphero.loss import SquareLoss, NegRegularizer
 grid = SphericalGrid(shape=(20, 50, 50, 50))
 
 # generate a simple static test object with two nested shells
-# to run on CPU, use device='cpu'
-x = t.zeros(grid.shape, device='cuda')
+x = t.zeros(grid.shape, device=device)
 x[:, :, 25:, :25] = 1
 x[:, :, :25, 25:] = 1
 # moving elevation element
@@ -42,7 +39,7 @@ for theta in t.linspace(0, 2*t.pi, grid.shape.t):
 geoms = sum(geoms)
 
 # define forward operator
-op = Operator(grid, geoms, device=x.device)
+op = Operator(grid, geoms, device=device)
 
 # generate some measurements to retrieve from.  No measurement noise in this case
 meas = op(x)

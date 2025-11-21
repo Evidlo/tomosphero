@@ -12,6 +12,8 @@ from tomosphero.model import FullyDenseModel
 from tomosphero.retrieval import gd
 from tomosphero.loss import SquareLoss, NegRegularizer
 
+device = "cuda:0" if t.cuda.is_available() else "cpu"
+
 # ----- Setup -----
 
 # define grid.  Grid spacing may be customized but are left default here
@@ -19,7 +21,7 @@ grid = SphericalGrid(shape=(50, 50, 50))
 
 # generate a simple static test object with two nested shells
 # to run on CPU, use device='cpu'
-x = t.zeros(grid.shape, device='cuda')
+x = t.zeros(grid.shape, device=device)
 x[:, 25:, :25] = 1
 x[:, :25, 25:] = 1
 
@@ -39,7 +41,7 @@ for theta in t.linspace(0, 2*t.pi, 50):
 geoms = sum(geoms)
 
 # define forward operator
-op = Operator(grid, geoms, device=x.device)
+op = Operator(grid, geoms, device=device)
 
 # generate some measurements to retrieve from.  No measurement noise in this case
 meas = op(x)

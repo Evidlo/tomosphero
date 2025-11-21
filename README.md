@@ -19,7 +19,10 @@ Note that TomoSphero is a *volumetric* raytracer (i.e. not occlusions, shading, 
 
 ## Installation and Quickstart
 
-    pip install tomosphero
+    # optional: pre-install appropriate PyTorch for your system (defaults to CUDA version)
+    # https://pytorch.org/get-started/locally/
+
+    pip install tomosphero[extras]
     git clone https://github.com/evidlo/tomosphero && cd tomosphero
     python examples/single_vantage.py
 

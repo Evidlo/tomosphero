@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 
 from tomosphero import SphericalGrid, ConeRectGeom, Operator
 
+device = "cuda:0" if t.cuda.is_available() else "cpu"
+
 # define spherical grid and viewing geometry vantage
 grid = SphericalGrid(shape=(50, 50, 50))
 # rectilinear detector with 45° FOV (pointed at origin by default)
@@ -17,12 +19,10 @@ geom = ConeRectGeom(
 )
 
 # define forward operator
-# to run on CPU, use device='cpu'
-op = Operator(grid, geom, device='cuda')
+op = Operator(grid, geom, device=device)
 
 # generate a simple static test object with two nested shells
-# to run on CPU, use device='cpu'
-x = t.zeros(grid.shape, device=op.device)
+x = t.zeros(grid.shape, device=device)
 x[-1, :, :] += 1
 x[-10, :, :] += 1
 

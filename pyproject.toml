@@ -4,11 +4,16 @@ version = "0.0.2"
 description = "PyTorch volume raytracer in spherical coordinates"
 readme = "README.md"
 dependencies = [
-  "torch>=1.12.1",
   "tqdm"
+  "torch>=1.12.1",
 ]
 authors = [
   {name = "Evan Widloski", email = "evan_gh@widloski.com"}
+]
+
+[project.optional-dependencies]
+extras = [
+  "matplotlib",
 ]
 
 [build-system]
