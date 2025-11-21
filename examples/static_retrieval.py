@@ -14,6 +14,9 @@ from tomosphero.loss import SquareLoss, NegRegularizer
 
 device = "cuda:0" if t.cuda.is_available() else "cpu"
 
+if device == 'cpu':
+    print("Warning: Using CPU. This may take a while...")
+
 # ----- Setup -----
 
 # define grid.  Grid spacing may be customized but are left default here
