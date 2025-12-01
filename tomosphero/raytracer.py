@@ -655,11 +655,12 @@ class Operator:
         device (str): torch device where tensors are stored
         pdevice (str): torch device where tensors are initialized
         dynamic (bool): force whether input object is evolving (4D) or static (3D)
+        chunk (bool or int): do input chunking to use less memory
         debug (bool): enable debug printing
         debug_los (tuple, None): choose LOS to debug
         _compute (bool): disable actual computation of LOS for plotting purposes
     """
-    def __init__(self, grid, geom, dynamic=False,
+    def __init__(self, grid, geom, dynamic=False, chunk=False,
                  ftype=FTYPE, itype=ITYPE, device=DEVICE, pdevice=PDEVICE,
                  debug=False, debug_los=None, invalid=False,
                  _compute=True):
@@ -669,6 +670,7 @@ class Operator:
         if dynamic is None:
             dynamic = True if isinstance(geom, ViewGeomCollection) else False
         self.dynamic = dynamic
+        self.chunk = chunk
         self.ftype = ftype
         self.itype = itype
         self.device = device
@@ -705,13 +707,36 @@ class Operator:
         # if dynamic object:
         if self.grid.dynamic or self.dynamic:
             t = tr.arange(len(x))[:, None, None, None]
+            out_dims = 0
+            in_dims = (None, 0, 0, 0, 0, 0)
         else:
             t = Ellipsis
+            out_dims = 1 if x.ndim == 4 else 0
+            # dont vmap over Ellipsis
+            in_dims = (None, None, 0, 0, 0, 0)
 
-        result = x[t, r, e, a]
-        result *= self.lens
-        result = result.sum(axis=-1)
-        return result
+        def _innerprod(x, t, r, e, a, lens):
+            result = x[t, r, e, a]
+            result *= lens
+            result = result.sum(axis=-1)
+            return result
+
+
+        if self.chunk:
+            # batch using vmap
+            # from .fix import vmap as myvmap
+
+            innerprod = tr.vmap(
+                _innerprod,
+                in_dims=in_dims,
+                out_dims=out_dims,
+                chunk_size=self.chunk
+            )
+        else:
+            # no batching
+            innerprod = _innerprod
+
+        return innerprod(x, t, r, e, a, self.lens)
 
     def T(self, line_integrations):
         """Adjoint of raytrace line integration operator.

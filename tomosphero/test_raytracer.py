@@ -63,23 +63,40 @@ def test_operator_static():
 # check operator result shapes under various conditions
 def test_operator_shape():
     # trace through center of solid sphere
-    grids = [
-        # static grid and static input
-        [SphericalGrid((2, 3, 4)),     tr.rand((2, 3, 4))],
+    tests = [
+        # (grid, density, geom, result)
+
+        # static grid and static input with single vantage
+        [(2, 3, 4), (2, 3, 4), (64, 64), (64, 64)],
+        # static grid and static input with multi vantage
+        [(2, 3, 4), (2, 3, 4), (10, 64, 64), (10, 64, 64)],
         # static grid and static multichannel input
-        [SphericalGrid((2, 3, 4)),     tr.rand((10, 2, 3, 4))],
-        # dynamic grid and dynamic input
-        [SphericalGrid((10, 2, 3, 4)), tr.rand((10, 2, 3, 4))],
+        [(2, 3, 4), (10, 2, 3, 4), (64, 64), (10, 64, 64)],
+        # static grid and static multichannel input with multi vantage
+        [(2, 3, 4), (10, 2, 3, 4), (5, 64, 64), (10, 5, 64, 64)],
+        # FIXME: dynamic grid and dynamic input with static vantage
+        # [(10, 2, 3, 4), (10, 2, 3, 4), (64, 64), (10, 64, 64)],
+        # static grid and multichannel input with static vantage
+        [(2, 3, 4), (10, 2, 3, 4), (64, 64), (10, 64, 64)],
+        # dynamic grid and dynamic input with dynamic vantage
+        [(10, 2, 3, 4), (10, 2, 3, 4), (10, 64, 64), (10, 64, 64)],
     ]
 
-    geom = ConeRectGeom(shape:=(64, 64), (1, 0, 0))
-    for grid, x in grids:
+    for grid_shape, density_shape, geom_shape, result_shape in tests:
+        # setup objects from shapes
+        grid = SphericalGrid(grid_shape)
+        density = tr.rand(density_shape)
+        geom = ViewGeom((1, 0, 0), tr.rand((*geom_shape, 3)))
+
         op = Operator(grid, geom)
-        result = op(x)
-        # shape of channel/time dimensions (i.e. nonspatial dimensions)
-        chan_time = x.shape[:-3]
-        fail_str = f"Failure for grid={grid} and input={x.shape}"
-        assert result.shape == chan_time + shape, f"Invalid shape: {fail_str}"
+        result = op(density)
+        fail_str = f"Failure: grid={grid.shape}, density={density.shape}, geom={geom.shape}"
+        assert result.shape == result_shape, f"Invalid shape: {fail_str}"
+
+        op = Operator(grid, geom, chunk=2)
+        result = op(density)
+        fail_str = f"Ch. Failure: grid={grid.shape}, density={density.shape}, geom={geom.shape}"
+        assert result.shape == result_shape, f"Invalid shape: {fail_str}"
 
 # raytracer regression bugs
 def test_buggy_los():
