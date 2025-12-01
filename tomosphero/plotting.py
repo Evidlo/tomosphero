@@ -277,7 +277,7 @@ def preview3d(x, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='cp
     geom = ConeRectGeom(shape, pos=pos, fov=(30, 30))
     # geom = ConeRectGeom(shape, pos=(4 * grid.size.r[1], halfaz, 1 * grid.size.r[1]), fov=(30, 30))
     # FIXME: flatten this too?
-    op = Operator(grid, geom)
+    op = Operator(grid, geom, chunk=2)
 
     # if multiple channels, process each separately
     if x.ndim == len(grid.shape) + 1:
