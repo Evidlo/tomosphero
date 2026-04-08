@@ -17,10 +17,10 @@ __all__ = ['SphericalGrid', 'ViewGeom', 'ConeRectGeom', 'ConeCircGeom',
            'ParallelGeom', 'ViewGeomCollection',
            ]
 
-StaticSize = namedtuple('Size', ['r', 'e', 'a'])
-StaticShape = namedtuple('Shape', ['r', 'e', 'a'])
-DynamicSize = namedtuple('Size', ['t', 'r', 'e', 'a'])
-DynamicShape = namedtuple('Shape', ['t', 'r', 'e', 'a'])
+StaticSize = namedtuple('StaticSize', ['r', 'e', 'a'])
+StaticShape = namedtuple('StaticShape', ['r', 'e', 'a'])
+DynamicSize = namedtuple('DynamicSize', ['t', 'r', 'e', 'a'])
+DynamicShape = namedtuple('DynamicShape', ['t', 'r', 'e', 'a'])
 
 FTYPE = tr.float64
 
