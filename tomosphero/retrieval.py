@@ -91,7 +91,7 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
     # perform requested number of iterations
     o_stat = 0
     try:
-        for _ in (pbar := tqdm(range(num_iterations), disable=not progress_bar)):
+        for it in (pbar := tqdm(range(num_iterations), disable=not progress_bar)):
             optim.zero_grad()
 
             x = model(coeffs)
@@ -110,8 +110,6 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
                 # log the loss
                 losses[loss_fn].append(detach_loss(loss))
 
-            for callback in callbacks:
-                callback(locals())
 
             pbar.set_description(f'F:{f_stat:.1e} R:{r_stat:.1e} O:{o_stat*100:.0f}')
 
@@ -120,6 +118,12 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
                 best_coeffs = coeffs
 
             tot_loss.backward(retain_graph=True)
+
+            # optional callbacks.
+            # callbacks before .step() so gradients can be manipulated
+            for callback in callbacks:
+                callback(locals())
+
             optim.step()
 
             # do coeffs projections after gradient step
