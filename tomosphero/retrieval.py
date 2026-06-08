@@ -136,3 +136,21 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
 
     y_result = f(model(best_coeffs))
     return best_coeffs, y_result, losses
+
+
+class LogCallback:
+    """Callback that logs fidelity, regularizer, and oracle error every N iterations."""
+
+    def __init__(self, stage_name, filepath='/tmp/losses.txt', interval=500):
+        self.stage_name = stage_name
+        self.filepath = filepath
+        self.interval = interval
+
+    def __call__(self, loc):
+        it = loc['it']
+        if it % self.interval == 0:
+            f_stat = loc.get('f_stat', 0)
+            r_stat = loc.get('r_stat', 0)
+            o_stat = loc.get('o_stat', 0)
+            with open(self.filepath, 'a') as f:
+                f.write(f"{self.stage_name} {it} f:{f_stat:.2e} r:{r_stat:.2e} o:{o_stat:.2f}\n")
