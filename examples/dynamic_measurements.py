@@ -21,7 +21,7 @@ x[:, :, 25:, :25] = 1
 x[:, :, :25, 25:] = 1
 # moving elevation element
 for time in range(grid.shape.t):
-    x[time, :, time*2, :] += 1
+    x[time, :, time * grid.shape.e // grid.shape.t, :] += 1
 
 # define a simple circular orbit around the origin
 geoms = []
