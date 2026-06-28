@@ -120,6 +120,8 @@ anim = geom.plot()
 
 View geometry shape may be queried later with `geom.shape`, and its internal LOS are available through `geom.ray_starts` for LOS start points and `geom.rays` for normal vectors.
 
+View geometries also have an optional `.mask` boolean tensor property which propagates as masks are manipulated/concatenated.  These may optionally be used by the loss functions during retrieval to ignore certain lines of sight.
+
 ## Taking Projections
 
 The `tomosphero.raytracer.Operator` class is responsible for carrying out the raytracing operation, taking the grid and view geometry specified previously as arguments.

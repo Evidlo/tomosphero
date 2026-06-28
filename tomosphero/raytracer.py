@@ -698,6 +698,15 @@ class Operator:
         # if dynamic and not isinstance(geom, ViewGeomCollection):
         #     raise ValueError("geom must be ViewGeomCollection instance when dynamic=True")
 
+    @property
+    def mask(self):
+        """Per-pixel boolean mask of shape `geom.shape` (True = keep).
+
+        A read-only passthrough to the geometry's mask. The Operator does NOT
+        apply this to its output; it is applied downstream by the caller.
+        """
+        return self.geom.mask
+
     def __call__(self, x):
         """Lookup up object indices for all rays and compute
         inner-product with intersection length

@@ -14,7 +14,7 @@ import math
 import torch as tr
 
 __all__ = ['SphericalGrid', 'ViewGeom', 'ConeRectGeom', 'ConeCircGeom',
-           'ParallelGeom', 'ViewGeomCollection',
+           'ParallelGeom', 'ViewGeomCollection', 'ZippedGeom',
            ]
 
 StaticSize = namedtuple('StaticSize', ['r', 'e', 'a'])
@@ -326,12 +326,37 @@ class ViewGeom:
 
     """
 
-    def __init__(self, ray_starts, rays):
+    _mask = None
+
+    def __init__(self, ray_starts, rays, mask=None):
         """@private"""
         self.ray_starts = tr.asarray(ray_starts, dtype=FTYPE)
         self.rays = tr.asarray(rays, dtype=FTYPE)
         self.rays /= tr.linalg.norm(self.rays, axis=-1)[..., None]
         self.shape = self.rays.shape[:-1]
+        self.mask = mask
+
+    @property
+    def mask(self):
+        """Per-pixel boolean mask of shape `self.shape` (True = keep).
+
+        Defaults to all-True. The Operator does NOT apply this mask; it travels
+        with the geometry and is applied downstream by the caller.
+        """
+        if self._mask is None:
+            return tr.ones(self.shape, dtype=bool)
+        return self._mask
+
+    @mask.setter
+    def mask(self, value):
+        if value is not None:
+            value = tr.asarray(value, dtype=bool)
+            if value.shape != tr.Size(self.shape):
+                raise ValueError(
+                    f"mask shape {tuple(value.shape)} does not match "
+                    f"geometry shape {tuple(self.shape)}"
+                )
+        self._mask = value
 
     def __add__(self, other):
         if other == 0 or other == None:
@@ -450,6 +475,17 @@ class ViewGeomCollection(ViewGeom):
         return tr.concat(tuple(g.ray_starts[None, ...] for g in self.geoms))
 
     @property
+    def mask(self):
+        return tr.concat(tuple(g.mask[None, ...] for g in self.geoms))
+
+    @mask.setter
+    def mask(self, value):
+        raise AttributeError(
+            "ViewGeomCollection.mask is a read-only view of its members; "
+            "assign to the individual geoms (collection.geoms[i].mask) instead"
+        )
+
+    @property
     def pos(self):
         if all(hasattr(g, 'pos') for g in self.geoms):
             return tr.concat(tuple(g.pos[None, ...] for g in self.geoms))
@@ -504,6 +540,66 @@ class ViewGeomCollection(ViewGeom):
 
         N = len(wireframe)
         return animation.FuncAnimation(ax.figure, update, N, interval=3000/N, blit=False)
+
+
+class ZippedGeom(ViewGeom):
+    """Zip several equal-length view geometries along a new camera axis.
+
+    Given K geometries each of shape ``(N, *item)``, presents shape
+    ``(N, K, *item)``: item ``i`` of every input is grouped so a dynamic
+    `tomosphero.raytracer.Operator` maps density slice ``i`` to all K cameras at
+    once (no tiling of the density).
+
+    The K originals are kept lazily and remain available as `.geoms`.
+
+    Args:
+        *geoms (ViewGeom): equal-length geometries with matching item shape
+    """
+    def __init__(self, *geoms):
+        """@private"""
+        if not all(g.shape == geoms[0].shape for g in geoms):
+            raise ValueError("ZippedGeom requires geometries of equal shape")
+        self.leaves = list(geoms)
+
+    @property
+    def geoms(self):
+        # flat, date-major: item n of every zipped geom, then the next n
+        N = self.leaves[0].shape[0]
+        return [g[n] for n in range(N) for g in self.leaves]
+
+    @property
+    def shape(self):
+        N, *item = self.leaves[0].shape
+        return (N, len(self.leaves), *item)
+
+    @property
+    def rays(self):
+        return tr.stack([g.rays for g in self.leaves], dim=1)
+
+    @property
+    def ray_starts(self):
+        return tr.stack([g.ray_starts for g in self.leaves], dim=1)
+
+    @property
+    def mask(self):
+        return tr.stack([g.mask for g in self.leaves], dim=1)
+
+    @mask.setter
+    def mask(self, value):
+        raise AttributeError(
+            "ZippedGeom.mask is a read-only view of its members; "
+            "assign to the zipped geoms (zipped.leaves[i].mask) instead"
+        )
+
+    @property
+    def pos(self):
+        if all(hasattr(g, 'pos') and g.pos is not None for g in self.leaves):
+            return tr.stack([g.pos for g in self.leaves], dim=1)
+        return None
+
+    @property
+    def _wireframe(self):
+        return sum([g._wireframe for g in self.geoms], [])
 
 
 class ConeRectGeom(ViewGeom):

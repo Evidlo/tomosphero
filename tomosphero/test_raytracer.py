@@ -296,3 +296,97 @@ def test_find_starts():
     grid = SphericalGrid(shape=(5, 5, 5))
     s = find_starts(grid, [100, 0, 0])
     assert check(s, [-1, 2, 2])
+
+
+# ----- Mask / ZippedGeom Tests -----
+
+def test_viewgeom_mask():
+    g = ConeRectGeom((11, 7), (4, 0, 1), fov=(23, 45))
+    # default mask is all-True with detector shape
+    assert g.mask.shape == tr.Size(g.shape)
+    assert g.mask.dtype == tr.bool
+    assert g.mask.all()
+
+    # explicit mask round-trips
+    m = tr.zeros(g.shape, dtype=bool)
+    m[0, 0] = True
+    g.mask = m
+    assert (g.mask == m).all()
+
+    # replace (not AND) is honored
+    g.mask = tr.ones(g.shape, dtype=bool)
+    assert g.mask.all()
+
+    # wrong shape throws
+    try:
+        g.mask = tr.ones((3, 3), dtype=bool)
+        assert False, "expected ValueError on wrong mask shape"
+    except ValueError:
+        pass
+
+    # mask passed at construction
+    rays = tr.rand((4, 4, 3))
+    starts = tr.tensor((10., 0, 0)).broadcast_to(rays.shape)
+    m = tr.zeros((4, 4), dtype=bool)
+    g = ViewGeom(starts, rays, mask=m)
+    assert (g.mask == m).all()
+
+
+def test_collection_mask():
+    geoms = [ConeRectGeom((5, 6), (4, 0, i), fov=(23, 45)) for i in range(3)]
+    coll = sum(geoms[1:], geoms[0])  # ViewGeomCollection of 3
+
+    # concat view over members
+    assert coll.mask.shape == tr.Size((3, 5, 6))
+    assert coll.mask.all()
+
+    # masking one member propagates through the collection
+    coll.geoms[1].mask = tr.zeros((5, 6), dtype=bool)
+    assert coll.mask[1].sum() == 0
+    assert coll.mask[0].all() and coll.mask[2].all()
+
+    # collection mask is read-only
+    try:
+        coll.mask = tr.ones((3, 5, 6), dtype=bool)
+        assert False, "expected AttributeError on collection mask set"
+    except AttributeError:
+        pass
+
+
+def test_zippedgeom():
+    N, K = 4, 2
+    item = (5, 6)
+    # K collections, each length N of (5, 6) detectors
+    colls = [
+        sum([ConeRectGeom(item, (4, 0, n + 10 * k), fov=(23, 45)) for n in range(N)][1:],
+            ConeRectGeom(item, (4, 0, 10 * k), fov=(23, 45)))
+        for k in range(K)
+    ]
+    z = ZippedGeom(*colls)
+
+    # zip inserts a new camera axis: (N, K, *item)
+    assert z.shape == (N, K, *item)
+    assert z.rays.shape == (N, K, *item, 3)
+    # ray_starts may broadcast (cone apex is shared) — just check the zip axes
+    assert z.ray_starts.shape[:2] == (N, K) and z.ray_starts.shape[-1] == 3
+    assert z.mask.shape == tr.Size((N, K, *item))
+
+    # originals kept in .leaves; .geoms is the flat date-major leaf list
+    assert z.leaves[0] is colls[0] and len(z.leaves) == K
+    assert len(z.geoms) == N * K
+    # date-major order: geoms[0] is date0/cam0, geoms[1] is date0/cam1
+    assert z.geoms[0] is colls[0].geoms[0]
+    assert z.geoms[1] is colls[1].geoms[0]
+
+    # mask concat reflects member edits
+    colls[1].geoms[0].mask = tr.zeros(item, dtype=bool)
+    assert z.mask[0, 1].sum() == 0
+    assert z.mask[0, 0].all()
+
+    # dynamic operator round-trip: density slice i -> all K cameras of group i,
+    # no tiling.  output shape == geom.shape
+    grid = SphericalGrid(shape=(N, 8, 9, 10), size_r=(3, 25))
+    op = Operator(grid, z, dynamic=True)
+    assert (op.mask == z.mask).all()  # passthrough to geom.mask
+    x = tr.ones((N, 8, 9, 10))
+    assert op(x).shape == tr.Size(z.shape)
