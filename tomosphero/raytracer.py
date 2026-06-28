@@ -678,6 +678,14 @@ class Operator:
                 ftype=ftype, itype=itype, device=device, pdevice=pdevice,
                 invalid=invalid, debug=debug, debug_los=debug_los
             )
+            # Precompute a flat voxel index used by __call__'s gather path. Doing
+            # this once at init (instead of every call) avoids a ~regs-sized
+            # temporary on each forward pass — that per-call alloc was the OOM
+            # trigger on large dynamic grids.
+            r, e, a = self.regs
+            R, E, A = grid.shape.r, grid.shape.e, grid.shape.a
+            self.flat = ((r % R) * E + (e % E)) * A + (a % A)
+            self._spatial_size = R * E * A
 
         # FIXME: should turn this check back on
         # see why zeroing out region index slows down operator
@@ -701,17 +709,21 @@ class Operator:
         Returns:
             line_integrations (tensor): integrated lines of sight of shape `geom.shape`
         """
-        r, e, a = self.regs
-        # if dynamic object:
+        flat = self.flat
         if self.grid.dynamic or self.dynamic:
-            t = tr.arange(len(x))[:, None, None, None]
+            # leading dim of x is time, identified with regs' leading view dim
+            # (or broadcast across views if regs has no view dim). gather avoids
+            # the 4-tensor advanced index whose backward is ~6× slower.
+            T = x.shape[0]
+            flat_T = flat if flat.shape[0] == T else flat.unsqueeze(0).expand(T, *flat.shape)
+            result = tr.gather(x.reshape(T, -1), 1, flat_T.reshape(T, -1)).reshape(flat_T.shape)
         else:
-            t = Ellipsis
-
-        result = x[t, r, e, a]
+            # leading dims of x are channels: broadcast against regs. index_select
+            # on the flattened spatial axis keeps backward to a 1D index_add_.
+            result = x.reshape(-1, self._spatial_size).index_select(1, flat.reshape(-1))
+            result = result.reshape(*x.shape[:-3], *flat.shape)
         result *= self.lens
-        result = result.sum(axis=-1)
-        return result
+        return result.sum(axis=-1)
 
     def T(self, line_integrations):
         """Adjoint of raytrace line integration operator.
