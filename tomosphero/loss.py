@@ -18,7 +18,7 @@ class Loss:
     Instantiating Loss objects may be multiplied by a float to set weight (see Usage).
 
     Args:
-        projection_mask (tensor): projection pixels to mask out when computing loss
+        mask (tensor): projection pixels to mask out when computing loss
         obj_mask (tensor, optional): voxels to mask out when computing loss
         lam (float, optional): loss function scaling (default 1)
         use_grad (bool, optional): whether this loss function's gradient needs to be
@@ -44,11 +44,11 @@ class Loss:
     kind = 'regularizer'
 
     def __init__(
-            self, *args, projection_mask=1, obj_mask=1, lam=1,
+            self, *args, mask=1, obj_mask=1, lam=1,
             use_grad=True, **kwargs
         ):
         """@private"""
-        self.projection_mask = projection_mask
+        self.mask = mask
         self.obj_mask = obj_mask
         self.lam = lam
         self.use_grad = use_grad
@@ -58,7 +58,7 @@ class Loss:
 
         Args:
             f (Operator): forward function. object→projections
-            y (tensor): measurements.  shape must match `projection_mask`
+            y (tensor): measurements.  shape must match `mask`
             x (tensor): object to pass through forward function.
                 shape must match `obj_mask`
             c (tensor): coefficients of shape model.coeffs_shape
@@ -73,7 +73,7 @@ class Loss:
 
         Args:
             f (Operator): forward function. object→projections
-            y (tensor): measurements.  shape must match `projection_mask`
+            y (tensor): measurements.  shape must match `mask`
             x (tensor): object to pass through forward function.
                 shape must match `obj_mask`
             c (tensor): coefficients of shape model.coeffs_shape
@@ -109,7 +109,7 @@ class SquareLoss(Loss):
 
     def compute(self, f, y, x, c):
         """"""
-        result = t.mean(self.projection_mask * (y - f(x * self.obj_mask))**2)
+        result = t.mean(self.mask * (y - f(x * self.obj_mask))**2)
         return result
 
 
@@ -123,13 +123,13 @@ class SquareRelLoss(Loss):
         obs = f(x * self.obj_mask)
 
         # rel_err = (y - obs) / y
-        # rel_err = rel_err.nan_to_num() * self.projection_mask
+        # rel_err = rel_err.nan_to_num() * self.mask
 
         zero_mask = (y != 0)
         rel_err = t.zeros_like(y)
         rel_err[zero_mask] = (y - obs)[zero_mask] / y[zero_mask]
 
-        return t.mean((self.projection_mask * rel_err)**2)
+        return t.mean((self.mask * rel_err)**2)
 
 
 class AbsLoss(Loss):
@@ -139,7 +139,7 @@ class AbsLoss(Loss):
 
     def compute(self, f, y, x, c):
         """"""
-        result = t.mean(self.projection_mask * (y - f(x * self.obj_mask)).abs())
+        result = t.mean(self.mask * (y - f(x * self.obj_mask)).abs())
         return result
 
 
@@ -320,7 +320,7 @@ class IRLSLoss(Loss):
         self.n += 1
 
         # absolute measurement residuals
-        res_abs = self.projection_mask * (y - f(x * self.obj_mask)).abs()
+        res_abs = self.mask * (y - f(x * self.obj_mask)).abs()
         weight = 1 / (self.noise_var + res_abs**2)
         # weight = 1
         weight = 1
