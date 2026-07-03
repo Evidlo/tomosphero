@@ -109,8 +109,27 @@ class SquareLoss(Loss):
 
     def compute(self, f, y, x, c):
         """"""
-        result = t.mean(self.mask * (y - f(x * self.obj_mask))**2)
+        result = t.nanmean(self.mask * (y - f(x * self.obj_mask))**2)
         return result
+
+
+class HuberLoss(Loss):
+    """Mean Huber loss.  delta: float, or 'auto' = 1.35·median|resid| per
+iter"""
+    kind = 'fidelity'
+
+    def __init__(self, *args, delta='auto', **kwargs):
+        super().__init__(*args, **kwargs)
+        self.delta = delta
+
+    def compute(self, f, y, x, c):
+        r = self.mask * (y - f(x * self.obj_mask))
+        delta = self.delta
+        if delta == 'auto':
+            with t.no_grad():
+                delta = 1.35 * r[r != 0].abs().nanmedian()
+        quad = t.clamp(r.abs(), max=delta)
+        return t.nanmean(quad * (r.abs() - 0.5 * quad))
 
 
 class SquareRelLoss(Loss):
@@ -139,7 +158,7 @@ class AbsLoss(Loss):
 
     def compute(self, f, y, x, c):
         """"""
-        result = t.mean(self.mask * (y - f(x * self.obj_mask)).abs())
+        result = t.nanmean(self.mask * (y - f(x * self.obj_mask)).abs())
         return result
 
 
