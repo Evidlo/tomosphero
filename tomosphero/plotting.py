@@ -311,7 +311,7 @@ def loss_plot(losses, ax=None):
         matplotlib Figure
     """
     if ax is None:
-        fig, ax = plt.subplots(figsize=(5, 3))
+        fig, ax = plt.subplots(figsize=(5, 3), dpi=150)
     sax = ax.twinx()
 
     for loss_fn, loss in losses.items():
