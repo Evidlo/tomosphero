@@ -156,7 +156,7 @@ class SphericalGrid:
 
         # otherwise compute grid
         elif (shape is not None) and (size is not None):
-            if len(shape) == 4:
+            if len(shape) == 4 and t is None:
                 t = tr.linspace(size.t[0], size.t[1], shape.t, dtype=tr.float64)
             if spacing == 'log':
                 r_b = tr.logspace(math.log10(size.r[0]), math.log10(size.r[1]), shape.r + 1, dtype=tr.float64)
@@ -190,7 +190,7 @@ class SphericalGrid:
         """e_b (tensor[float]): elevational bin boundaries"""
         self.a_b = a_b
         """a_b (tensor[float]): azimuthal bin boundaries"""
-        self.t = t
+        self.t = tr.tensor(t.astype(int)) if t is not None else None
         """t (tensor[int]): sample times"""
         self.r = r
         """r (tensor[float]): radial bin centers"""
@@ -263,6 +263,19 @@ class SphericalGrid:
         return artists
 
     @property
+    def static(self):
+        """SphericalGrid: copy of this grid with the time dimension dropped.
+        No-op on an already static grid
+        """
+        from copy import copy
+        grid = copy(self)
+        grid.dynamic = False
+        grid.shape = StaticShape(*self.shape[-3:])
+        grid.size = StaticSize(*self.size[-3:])
+        grid.t = None
+        return grid
+
+    @property
     def _coords(self) -> dict[str, tr.Tensor]:
         """"""
         c = {'r':self.r, 'e':self.e, 'a':self.a}
@@ -318,6 +331,8 @@ class ViewGeom:
     Args:
         ray_starts (tensor): XYZ Pixel location array of shape (..., 3)
         rays (tensor): XYZ Pixel LOS array of shape (..., 3)
+        mask (tensor, optional): optional mask which can be used in retrievals to mark
+            LOS as invalid
 
     Attributes:
         ray_starts (tensor):
