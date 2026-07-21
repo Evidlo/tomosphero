@@ -57,6 +57,15 @@
             <li>
                     <a class="function" href="#gd">gd</a>
             </li>
+            <li>
+                    <a class="class" href="#LogCallback">LogCallback</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#LogCallback.__init__">LogCallback</a>
+                        </li>
+                </ul>
+
+            </li>
     </ul>
 
 
@@ -176,7 +185,7 @@
 </span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>    <span class="c1"># perform requested number of iterations</span>
 </span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>    <span class="n">o_stat</span> <span class="o">=</span> <span class="mi">0</span>
 </span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">(</span><span class="n">pbar</span> <span class="o">:=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">)):</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="p">(</span><span class="n">pbar</span> <span class="o">:=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">)):</span>
 </span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>            <span class="n">optim</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>            <span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
@@ -195,28 +204,50 @@
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>                <span class="c1"># log the loss</span>
 </span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>                <span class="n">losses</span><span class="p">[</span><span class="n">loss_fn</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detach_loss</span><span class="p">(</span><span class="n">loss</span><span class="p">))</span>
 </span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>
-</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
-</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>                <span class="n">callback</span><span class="p">(</span><span class="nb">locals</span><span class="p">())</span>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>            <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F:</span><span class="si">{</span><span class="n">f_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> R:</span><span class="si">{</span><span class="n">r_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> O:</span><span class="si">{</span><span class="n">o_stat</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>
-</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>            <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F:</span><span class="si">{</span><span class="n">f_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> R:</span><span class="si">{</span><span class="n">r_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> O:</span><span class="si">{</span><span class="n">o_stat</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>
-</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>            <span class="c1"># save the reconstruction with the lowest loss</span>
-</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>            <span class="k">if</span> <span class="n">tot_loss</span> <span class="o">&lt;</span> <span class="n">best_loss</span><span class="p">:</span>
-</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>                <span class="n">best_coeffs</span> <span class="o">=</span> <span class="n">coeffs</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>            <span class="c1"># save the reconstruction with the lowest loss</span>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>            <span class="k">if</span> <span class="n">tot_loss</span> <span class="o">&lt;</span> <span class="n">best_loss</span><span class="p">:</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>                <span class="n">best_coeffs</span> <span class="o">=</span> <span class="n">coeffs</span>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>            <span class="n">tot_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
-</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>            <span class="n">tot_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>            <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>
-</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>            <span class="c1"># do coeffs projections after gradient step</span>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;proj&#39;</span><span class="p">):</span>
-</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>                <span class="n">coeffs</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>            <span class="c1"># optional callbacks.</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>            <span class="c1"># callbacks before .step() so gradients can be manipulated</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>                <span class="n">callback</span><span class="p">(</span><span class="nb">locals</span><span class="p">())</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>            <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 </span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>
-</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>    <span class="c1"># allow user to stop iterations</span>
-</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>        <span class="k">pass</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>            <span class="c1"># do coeffs projections after gradient step</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;proj&#39;</span><span class="p">):</span>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>                <span class="n">coeffs</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
 </span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>
-</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>    <span class="n">y_result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">best_coeffs</span><span class="p">))</span>
-</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>    <span class="k">return</span> <span class="n">best_coeffs</span><span class="p">,</span> <span class="n">y_result</span><span class="p">,</span> <span class="n">losses</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>    <span class="c1"># allow user to stop iterations</span>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>        <span class="k">pass</span>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>    <span class="n">y_result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">best_coeffs</span><span class="p">))</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>    <span class="k">return</span> <span class="n">best_coeffs</span><span class="p">,</span> <span class="n">y_result</span><span class="p">,</span> <span class="n">losses</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="k">class</span><span class="w"> </span><span class="nc">LogCallback</span><span class="p">:</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback that logs fidelity, regularizer, and oracle error every N iterations.&quot;&quot;&quot;</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;/tmp/losses.txt&#39;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">stage_name</span> <span class="o">=</span> <span class="n">stage_name</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>        <span class="n">it</span> <span class="o">=</span> <span class="n">loc</span><span class="p">[</span><span class="s1">&#39;it&#39;</span><span class="p">]</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>        <span class="k">if</span> <span class="n">it</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>            <span class="n">f_stat</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;f_stat&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>            <span class="n">r_stat</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;r_stat&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>            <span class="n">o_stat</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;o_stat&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">it</span><span class="si">}</span><span class="s2"> f:</span><span class="si">{</span><span class="n">f_stat</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> r:</span><span class="si">{</span><span class="n">r_stat</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> o:</span><span class="si">{</span><span class="n">o_stat</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -347,7 +378,7 @@ that is not used by the PyTorch optimizer</p>
 </span><span id="gd-92"><a href="#gd-92"><span class="linenos"> 92</span></a>    <span class="c1"># perform requested number of iterations</span>
 </span><span id="gd-93"><a href="#gd-93"><span class="linenos"> 93</span></a>    <span class="n">o_stat</span> <span class="o">=</span> <span class="mi">0</span>
 </span><span id="gd-94"><a href="#gd-94"><span class="linenos"> 94</span></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="gd-95"><a href="#gd-95"><span class="linenos"> 95</span></a>        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">(</span><span class="n">pbar</span> <span class="o">:=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">)):</span>
+</span><span id="gd-95"><a href="#gd-95"><span class="linenos"> 95</span></a>        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="p">(</span><span class="n">pbar</span> <span class="o">:=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">)):</span>
 </span><span id="gd-96"><a href="#gd-96"><span class="linenos"> 96</span></a>            <span class="n">optim</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
 </span><span id="gd-97"><a href="#gd-97"><span class="linenos"> 97</span></a>
 </span><span id="gd-98"><a href="#gd-98"><span class="linenos"> 98</span></a>            <span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
@@ -366,28 +397,32 @@ that is not used by the PyTorch optimizer</p>
 </span><span id="gd-111"><a href="#gd-111"><span class="linenos">111</span></a>                <span class="c1"># log the loss</span>
 </span><span id="gd-112"><a href="#gd-112"><span class="linenos">112</span></a>                <span class="n">losses</span><span class="p">[</span><span class="n">loss_fn</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detach_loss</span><span class="p">(</span><span class="n">loss</span><span class="p">))</span>
 </span><span id="gd-113"><a href="#gd-113"><span class="linenos">113</span></a>
-</span><span id="gd-114"><a href="#gd-114"><span class="linenos">114</span></a>            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
-</span><span id="gd-115"><a href="#gd-115"><span class="linenos">115</span></a>                <span class="n">callback</span><span class="p">(</span><span class="nb">locals</span><span class="p">())</span>
+</span><span id="gd-114"><a href="#gd-114"><span class="linenos">114</span></a>
+</span><span id="gd-115"><a href="#gd-115"><span class="linenos">115</span></a>            <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F:</span><span class="si">{</span><span class="n">f_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> R:</span><span class="si">{</span><span class="n">r_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> O:</span><span class="si">{</span><span class="n">o_stat</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </span><span id="gd-116"><a href="#gd-116"><span class="linenos">116</span></a>
-</span><span id="gd-117"><a href="#gd-117"><span class="linenos">117</span></a>            <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F:</span><span class="si">{</span><span class="n">f_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> R:</span><span class="si">{</span><span class="n">r_stat</span><span class="si">:</span><span class="s1">.1e</span><span class="si">}</span><span class="s1"> O:</span><span class="si">{</span><span class="n">o_stat</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</span><span id="gd-118"><a href="#gd-118"><span class="linenos">118</span></a>
-</span><span id="gd-119"><a href="#gd-119"><span class="linenos">119</span></a>            <span class="c1"># save the reconstruction with the lowest loss</span>
-</span><span id="gd-120"><a href="#gd-120"><span class="linenos">120</span></a>            <span class="k">if</span> <span class="n">tot_loss</span> <span class="o">&lt;</span> <span class="n">best_loss</span><span class="p">:</span>
-</span><span id="gd-121"><a href="#gd-121"><span class="linenos">121</span></a>                <span class="n">best_coeffs</span> <span class="o">=</span> <span class="n">coeffs</span>
+</span><span id="gd-117"><a href="#gd-117"><span class="linenos">117</span></a>            <span class="c1"># save the reconstruction with the lowest loss</span>
+</span><span id="gd-118"><a href="#gd-118"><span class="linenos">118</span></a>            <span class="k">if</span> <span class="n">tot_loss</span> <span class="o">&lt;</span> <span class="n">best_loss</span><span class="p">:</span>
+</span><span id="gd-119"><a href="#gd-119"><span class="linenos">119</span></a>                <span class="n">best_coeffs</span> <span class="o">=</span> <span class="n">coeffs</span>
+</span><span id="gd-120"><a href="#gd-120"><span class="linenos">120</span></a>
+</span><span id="gd-121"><a href="#gd-121"><span class="linenos">121</span></a>            <span class="n">tot_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="gd-122"><a href="#gd-122"><span class="linenos">122</span></a>
-</span><span id="gd-123"><a href="#gd-123"><span class="linenos">123</span></a>            <span class="n">tot_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="gd-124"><a href="#gd-124"><span class="linenos">124</span></a>            <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-</span><span id="gd-125"><a href="#gd-125"><span class="linenos">125</span></a>
-</span><span id="gd-126"><a href="#gd-126"><span class="linenos">126</span></a>            <span class="c1"># do coeffs projections after gradient step</span>
-</span><span id="gd-127"><a href="#gd-127"><span class="linenos">127</span></a>            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;proj&#39;</span><span class="p">):</span>
-</span><span id="gd-128"><a href="#gd-128"><span class="linenos">128</span></a>                <span class="n">coeffs</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+</span><span id="gd-123"><a href="#gd-123"><span class="linenos">123</span></a>            <span class="c1"># optional callbacks.</span>
+</span><span id="gd-124"><a href="#gd-124"><span class="linenos">124</span></a>            <span class="c1"># callbacks before .step() so gradients can be manipulated</span>
+</span><span id="gd-125"><a href="#gd-125"><span class="linenos">125</span></a>            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+</span><span id="gd-126"><a href="#gd-126"><span class="linenos">126</span></a>                <span class="n">callback</span><span class="p">(</span><span class="nb">locals</span><span class="p">())</span>
+</span><span id="gd-127"><a href="#gd-127"><span class="linenos">127</span></a>
+</span><span id="gd-128"><a href="#gd-128"><span class="linenos">128</span></a>            <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 </span><span id="gd-129"><a href="#gd-129"><span class="linenos">129</span></a>
-</span><span id="gd-130"><a href="#gd-130"><span class="linenos">130</span></a>    <span class="c1"># allow user to stop iterations</span>
-</span><span id="gd-131"><a href="#gd-131"><span class="linenos">131</span></a>    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-</span><span id="gd-132"><a href="#gd-132"><span class="linenos">132</span></a>        <span class="k">pass</span>
+</span><span id="gd-130"><a href="#gd-130"><span class="linenos">130</span></a>            <span class="c1"># do coeffs projections after gradient step</span>
+</span><span id="gd-131"><a href="#gd-131"><span class="linenos">131</span></a>            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;proj&#39;</span><span class="p">):</span>
+</span><span id="gd-132"><a href="#gd-132"><span class="linenos">132</span></a>                <span class="n">coeffs</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
 </span><span id="gd-133"><a href="#gd-133"><span class="linenos">133</span></a>
-</span><span id="gd-134"><a href="#gd-134"><span class="linenos">134</span></a>    <span class="n">y_result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">best_coeffs</span><span class="p">))</span>
-</span><span id="gd-135"><a href="#gd-135"><span class="linenos">135</span></a>    <span class="k">return</span> <span class="n">best_coeffs</span><span class="p">,</span> <span class="n">y_result</span><span class="p">,</span> <span class="n">losses</span>
+</span><span id="gd-134"><a href="#gd-134"><span class="linenos">134</span></a>    <span class="c1"># allow user to stop iterations</span>
+</span><span id="gd-135"><a href="#gd-135"><span class="linenos">135</span></a>    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+</span><span id="gd-136"><a href="#gd-136"><span class="linenos">136</span></a>        <span class="k">pass</span>
+</span><span id="gd-137"><a href="#gd-137"><span class="linenos">137</span></a>
+</span><span id="gd-138"><a href="#gd-138"><span class="linenos">138</span></a>    <span class="n">y_result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">best_coeffs</span><span class="p">))</span>
+</span><span id="gd-139"><a href="#gd-139"><span class="linenos">139</span></a>    <span class="k">return</span> <span class="n">best_coeffs</span><span class="p">,</span> <span class="n">y_result</span><span class="p">,</span> <span class="n">losses</span>
 </span></pre></div>
 
 
@@ -432,6 +467,70 @@ dictionary on every iteration.  Called after loss computation</li>
 </div>
 
 
+                </section>
+                <section id="LogCallback">
+                            <input id="LogCallback-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">LogCallback</span>:
+
+                <label class="view-source-button" for="LogCallback-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#LogCallback"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LogCallback-142"><a href="#LogCallback-142"><span class="linenos">142</span></a><span class="k">class</span><span class="w"> </span><span class="nc">LogCallback</span><span class="p">:</span>
+</span><span id="LogCallback-143"><a href="#LogCallback-143"><span class="linenos">143</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback that logs fidelity, regularizer, and oracle error every N iterations.&quot;&quot;&quot;</span>
+</span><span id="LogCallback-144"><a href="#LogCallback-144"><span class="linenos">144</span></a>
+</span><span id="LogCallback-145"><a href="#LogCallback-145"><span class="linenos">145</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;/tmp/losses.txt&#39;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+</span><span id="LogCallback-146"><a href="#LogCallback-146"><span class="linenos">146</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">stage_name</span> <span class="o">=</span> <span class="n">stage_name</span>
+</span><span id="LogCallback-147"><a href="#LogCallback-147"><span class="linenos">147</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
+</span><span id="LogCallback-148"><a href="#LogCallback-148"><span class="linenos">148</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+</span><span id="LogCallback-149"><a href="#LogCallback-149"><span class="linenos">149</span></a>
+</span><span id="LogCallback-150"><a href="#LogCallback-150"><span class="linenos">150</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+</span><span id="LogCallback-151"><a href="#LogCallback-151"><span class="linenos">151</span></a>        <span class="n">it</span> <span class="o">=</span> <span class="n">loc</span><span class="p">[</span><span class="s1">&#39;it&#39;</span><span class="p">]</span>
+</span><span id="LogCallback-152"><a href="#LogCallback-152"><span class="linenos">152</span></a>        <span class="k">if</span> <span class="n">it</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="LogCallback-153"><a href="#LogCallback-153"><span class="linenos">153</span></a>            <span class="n">f_stat</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;f_stat&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="LogCallback-154"><a href="#LogCallback-154"><span class="linenos">154</span></a>            <span class="n">r_stat</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;r_stat&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="LogCallback-155"><a href="#LogCallback-155"><span class="linenos">155</span></a>            <span class="n">o_stat</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;o_stat&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="LogCallback-156"><a href="#LogCallback-156"><span class="linenos">156</span></a>            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="LogCallback-157"><a href="#LogCallback-157"><span class="linenos">157</span></a>                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stage_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">it</span><span class="si">}</span><span class="s2"> f:</span><span class="si">{</span><span class="n">f_stat</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> r:</span><span class="si">{</span><span class="n">r_stat</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> o:</span><span class="si">{</span><span class="n">o_stat</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Callback that logs fidelity, regularizer, and oracle error every N iterations.</p>
+</div>
+
+
+                            <div id="LogCallback.__init__" class="classattr">
+                                        <input id="LogCallback.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+    <div class="attr function">
+            
+        <span class="name">LogCallback</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">stage_name</span>, </span><span class="param"><span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;/tmp/losses.txt&#39;</span>, </span><span class="param"><span class="n">interval</span><span class="o">=</span><span class="mi">500</span></span>)</span>
+
+                <label class="view-source-button" for="LogCallback.__init__-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#LogCallback.__init__"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LogCallback.__init__-145"><a href="#LogCallback.__init__-145"><span class="linenos">145</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;/tmp/losses.txt&#39;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+</span><span id="LogCallback.__init__-146"><a href="#LogCallback.__init__-146"><span class="linenos">146</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">stage_name</span> <span class="o">=</span> <span class="n">stage_name</span>
+</span><span id="LogCallback.__init__-147"><a href="#LogCallback.__init__-147"><span class="linenos">147</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
+</span><span id="LogCallback.__init__-148"><a href="#LogCallback.__init__-148"><span class="linenos">148</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div id="LogCallback.stage_name" class="classattr">
+                                
+                            </div>
+                            <div id="LogCallback.filepath" class="classattr">
+                                
+                            </div>
+                            <div id="LogCallback.interval" class="classattr">
+                                
+                            </div>
                 </section>
     </main>
 </body>
