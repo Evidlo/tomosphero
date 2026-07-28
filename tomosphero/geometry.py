@@ -190,7 +190,7 @@ class SphericalGrid:
         """e_b (tensor[float]): elevational bin boundaries"""
         self.a_b = a_b
         """a_b (tensor[float]): azimuthal bin boundaries"""
-        self.t = tr.tensor(t.astype(int)) if t is not None else None
+        self.t = tr.asarray(t).to(tr.int64) if t is not None else None
         """t (tensor[int]): sample times"""
         self.r = r
         """r (tensor[float]): radial bin centers"""

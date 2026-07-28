@@ -2,7 +2,7 @@
 
 import torch as tr
 
-from .test_all import check
+from .test_raytracer import check
 from .geometry import *
 
 def test_sphericalgrid_static():
