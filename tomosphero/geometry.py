@@ -11,6 +11,7 @@ for a cone-beam detector with known FOV and uniform pixel pitch.
 
 from collections import namedtuple
 import math
+import numpy as np
 import torch as tr
 
 __all__ = ['SphericalGrid', 'ViewGeom', 'ConeRectGeom', 'ConeCircGeom',
@@ -190,7 +191,11 @@ class SphericalGrid:
         """e_b (tensor[float]): elevational bin boundaries"""
         self.a_b = a_b
         """a_b (tensor[float]): azimuthal bin boundaries"""
-        self.t = tr.asarray(t).to(tr.int64) if t is not None else None
+        # np.asarray(...).astype('float64') so datetime64 samples (the usual case
+        # when timeunit is set) survive; torch cannot ingest datetime64 directly
+        self.t = tr.asarray(
+            np.asarray(t).astype('float64')
+        ).to(tr.int64) if t is not None else None
         """t (tensor[int]): sample times"""
         self.r = r
         """r (tensor[float]): radial bin centers"""
@@ -342,6 +347,10 @@ class ViewGeom:
     """
 
     _mask = None
+    # vantage position; None means the geometry has no single vantage.  Cone
+    # geoms shadow this with a plain instance attribute; collections override
+    # with a computed property
+    pos = None
 
     def __init__(self, ray_starts, rays, mask=None):
         """@private"""
@@ -502,7 +511,7 @@ class ViewGeomCollection(ViewGeom):
 
     @property
     def pos(self):
-        if all(hasattr(g, 'pos') for g in self.geoms):
+        if all(hasattr(g, 'pos') and g.pos is not None for g in self.geoms):
             return tr.concat(tuple(g.pos[None, ...] for g in self.geoms))
         else:
             return None

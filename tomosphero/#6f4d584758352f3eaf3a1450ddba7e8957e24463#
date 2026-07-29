@@ -1,0 +1,334 @@
+#!/usr/bin/env python3
+
+import math
+import torch as tr
+
+from .raytracer import r_torch, e_torch, a_torch, find_starts
+from .raytracer import Operator
+from .geometry import *
+
+def test_operator_static():
+    # trace through center of solid sphere
+    grids = [
+        SphericalGrid(shape=(50, 50, 50), size_r=(3, 25), size_e=(0, tr.pi), size_a=(-tr.pi, tr.pi)),
+        SphericalGrid(shape=(4, 4, 4)),
+        SphericalGrid(shape=(1, 4, 4)),
+        SphericalGrid(shape=(4, 1, 4)),
+        SphericalGrid(shape=(4, 4, 1)),
+    ]
+    # offset traced ray a small amount in several directions to check for rounding errors
+    u = 0.001
+    ray_starts = [
+        [-100, u, u],
+        [u, -100, u],
+        [u, u, -100],
+        [-100, 0, u],
+        [0, -100, u],
+        [0, u, -100],
+        [-100, u, 0],
+        [u, -100, 0],
+        [u, 0, -100],
+        [5, 0, 0],
+    ]
+    rays = [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+        # ray just barely glances elevation cone
+        [-0.99998629093170166016,  0.00413372274488210678, 0.00321511807851493359],
+    ]
+    for grid in grids:
+        geom = ViewGeom(ray_starts, rays)
+        op = Operator(grid, geom)
+        x = tr.ones(grid.shape)
+        result = op(x)
+        diam = 2 * (grid.size[0][1] - grid.size[0][0])
+        ray_success = tr.isclose(result, tr.tensor(diam, dtype=result.dtype))
+        fail_str = f"Failure for grid={grid} for ray #s {tr.where(ray_success == False)[0].tolist()}"
+        assert all(tr.isclose(result, tr.tensor(diam, dtype=result.dtype), atol=1e-2)), fail_str
+
+    # trace ray through center of hollow sphere
+    geom = ViewGeom([-100, 0, 0], [1, 0, 0])
+    grid = SphericalGrid(shape=(25, 25, 25), size_r=(5, 10))
+    op = Operator(grid, geom)
+    # trace multidimensional static object
+    result = op(tr.rand((5,) + grid.shape))
+    assert result.shape == (5,), "Incorrect shape for multi-channel object"
+
+def test_operator_segmented():
+    return
+    # trace line segment through uniform solid sphere r=1
+    grids = [
+        SphericalGrid(shape=(4, 4, 4)),
+        SphericalGrid(shape=(1, 4, 4)),
+        SphericalGrid(shape=(4, 1, 4)),
+        SphericalGrid(shape=(4, 4, 1)),
+    ]
+    ray_starts = [
+        [0, 0, 0],
+        [-.5, 0, 0],
+    ]
+    ray_ends = [
+        [0, 0, .5]
+        [0, 0, .5]
+    ]
+    results = [
+        .5,
+    ]
+    for grid, s, e, r in zip(grids, ray_starts, ray_ends, results):
+        geom = ViewGeom(ray_starts, ray_ends=ray_ends)
+        op = Operator(grid, geom)
+        x = tr.ones(grid.shape)
+        result = op(x)
+        ray_success = tr.isclose(result, tr.tensor(r, dtype=result.dtype))
+        fail_str = f"Failure for grid={grid} for ray #s {tr.where(ray_success == False)[0].tolist()}"
+        assert all(tr.isclose(result, tr.tensor(r, dtype=result.dtype), atol=1e-2)), fail_str
+
+    # trace ray through center of hollow sphere
+    geom = ViewGeom([-100, 0, 0], [1, 0, 0])
+    grid = SphericalGrid(shape=(25, 25, 25), size_r=(5, 10))
+    op = Operator(grid, geom)
+    # trace multidimensional static object
+    result = op(tr.rand((5,) + grid.shape))
+    assert result.shape == (5,), "Incorrect shape for multi-channel object"
+
+# check operator result shapes under various conditions
+def test_operator_shape():
+    # trace through center of solid sphere
+    grids = [
+        # static grid and static input
+        [SphericalGrid((2, 3, 4)),     tr.rand((2, 3, 4))],
+        # static grid and static multichannel input
+        [SphericalGrid((2, 3, 4)),     tr.rand((10, 2, 3, 4))],
+        # dynamic grid and dynamic input
+        [SphericalGrid((10, 2, 3, 4)), tr.rand((10, 2, 3, 4))],
+    ]
+
+    geom = ConeRectGeom(shape:=(64, 64), (1, 0, 0))
+    for grid, x in grids:
+        op = Operator(grid, geom)
+        result = op(x)
+        # shape of channel/time dimensions (i.e. nonspatial dimensions)
+        chan_time = x.shape[:-3]
+        fail_str = f"Failure for grid={grid} and input={x.shape}"
+        assert result.shape == chan_time + shape, f"Invalid shape: {fail_str}"
+
+# raytracer regression bugs
+def test_buggy_los():
+    # regression tests for specific LOS/grids that have given incorrect results
+    grids = [
+        SphericalGrid(shape=(1, 2, 1), size_r=(0, 25)),
+    ]
+    # objects
+    xs = [
+        tr.tensor([[[1.0], [0]]]) # upper hemisphere filled
+    ]
+    u = 0.001
+    ray_starts = [
+        [-200, u, u],
+    ]
+    rays = [
+        [1, 0, 0],
+    ]
+    correct_results = [
+        50
+    ]
+    test_cases = zip(grids, xs, ray_starts, rays, correct_results)
+    for grid, x, ray_start, ray, correct_result in test_cases:
+        geom = ViewGeom(ray_start, ray)
+        op = Operator(grid, geom)
+        result = op(x)
+        ray_success = tr.isclose(result, tr.tensor(correct_result, dtype=result.dtype))
+        fail_str = f"Failure for grid={grid} for ray #s {tr.where(ray_success == False)[0].tolist()}"
+        assert tr.isclose(result, tr.tensor(correct_result, dtype=result.dtype), atol=1e-2), fail_str
+
+    # trace ray through center of hollow sphere
+    geom = ViewGeom([-100, 0, 0], [1, 0, 0])
+    grid = SphericalGrid(shape=(25, 25, 25), size_r=(5, 10))
+    op = Operator(grid, geom)
+
+
+# ----- Intersection Tests -----
+
+def check(a, b):
+    """Helper function for checking equality of two tensors"""
+    return tr.allclose(
+        tr.asarray(a).type(tr.float32).flatten().squeeze(),
+        tr.asarray(b).type(tr.float32).flatten().squeeze(),
+        atol=1e-2
+    )
+
+def test_r():
+    r = (0.1, 1, 2)
+
+    # ray intersects all shells
+    xs = [(-3, 0, 0)]
+    rays = [(1, 0, 0)]
+    r_t, r_region = r_torch(r, xs, rays)[:2]
+    assert check(r_t, [2.9, 2, 1, 3.1, 4, 5])
+    assert check(r_region, [-1, 0, 1, 0, 1, -1])
+
+    # ray goes in opposite direction
+    xs = [(-3, 0, 0)]
+    rays = [(-1, 0, 0)]
+    r_t, r_region = r_torch(r, xs, rays)[:2]
+    assert check(r_t, [-3.1, -4, -5, -2.9, -2, -1])
+    assert check(r_region, [-1, 0, 1, 0, 1, -1])
+
+    # ray does not intersect any shells
+    xs = [(-3, 0, 0)]
+    rays = [(0, 0, 1)]
+    r_t, r_region = r_torch(r, xs, rays)[:2]
+    assert tr.all(tr.isinf(r_t))
+
+    # ray tangent to shell
+    xs = [(-3, 2, 0), (-3, -2, 0), (-3, -2, 0)]
+    rays = [(1, 0, 0), (1, 0, 0), (-1, 0, 0)]
+    r_t, r_region = r_torch([2], xs, rays)[:2]
+    assert check(r_t, [(3, 3), (3, 3), (-3, -3)])
+    assert check(r_region, [(-1, -1), (-1, -1), (-1, -1)])
+
+    # ray through r=0 shell
+    xs = [(-3, 0, 0)]
+    rays = [(1, 0, 0)]
+    r_t, r_region = r_torch([0], xs, rays)[:2]
+    assert check(r_t, [3, 3])
+    assert check(r_region, [-1, -1])
+
+
+def test_e():
+    e = tr.tensor([tr.pi/6, tr.pi/4])
+
+    # ray intersects all cones once (negative crossing)
+    xs = [(-1, 0, 0)]
+    rays = [(0, 0, 1)]
+    e_t, e_region = e_torch(e, xs, rays)[:2]
+    assert check(e_t, [math.sqrt(3), 1, float('inf'), float('inf')])
+    assert check(e_region, [-1, 0, -1, 0])
+
+    # ray intersects all cones twice (Z > 0)
+    d = 100
+    xs = [(-d, 0, 1)]
+    rays = [(1, 0, 0)]
+    e_t, e_region = e_torch(e, xs, rays)[:2]
+    inv3 = 1 / math.sqrt(3)
+    assert check(e_t, [d - inv3, d - 1, d + inv3, d + 1])
+    assert check(e_region, [-1, 0, 0, -1])
+
+    # ray intersects all cones twice (Z < 0)
+    d = 100
+    xs = [(-d, 0, -1)]
+    rays = [(1, 0, 0)]
+    e_t, e_region = e_torch(tr.pi - e, xs, rays)[:2]
+    inv3 = 1 / math.sqrt(3)
+    assert check(e_t, [d - inv3, d - 1, d + inv3, d + 1])
+    assert check(e_region, [0, -1, -1, 0])
+
+    # ray through shadow cones
+    xs = [(-1, 0, -1)]
+    rays = [(1, 0, 0)]
+    e_t, e_region = e_torch(e, xs, rays)[:2]
+    assert check(e_t, 4 * [float('inf')])
+    assert check(e_region, [0, -1, -1, 0])
+
+    # ray parallel to cone
+    xs = [(0, 0, 1)]
+    rays = [(1, 0, 1)]
+    e_t, e_region = e_torch([tr.pi / 4], xs, rays)[:2]
+    assert check(e_t, [-1 / math.sqrt(2), float('inf')])
+    assert check(e_region, [-1, -1])
+
+    # ray on cone
+    xs = [(-1, 0, 1)]
+    rays = [(1, 0, -1)]
+    e_t, e_region = e_torch([tr.pi / 4], xs, rays)[:2]
+    assert check(e_t, [float('inf'), float('inf')]) or check(e_t, [-float('inf'), -float('inf')])
+    assert check(e_region, [-1, -1])
+
+    # ray tangent to cone
+    xs = [(1, 1, 1)]
+    rays = [(0, -1, 0)]
+    e_t, e_region = e_torch([tr.pi / 4], xs, rays)[:2]
+    assert check(e_t, [1, 1])
+    assert check(e_region, [-2, -2])
+
+    # ray through origin
+    xs = [(-1, 0, 0)]
+    rays = [(1, 0, 0)]
+    e_t, e_region = e_torch(e, xs, rays)[:2]
+    # assert check(e_t, [1, 1, float('inf'), float('inf')])
+    assert check(e_t, [1, 1, 1, 1])
+    # FIXME
+    # assert check(e_region, [0, -1, -1, 0])
+
+    # ray through e=0, e=π cones
+    xs = [(-1, 0, 0)]
+    rays = [(1, 0, 0)]
+    e_t, e_region = e_torch([0, tr.pi], xs, rays)[:2]
+    # FIXME:
+    # assert check(e_t, [1, 1, float('inf'), float('inf')])
+    # assert check(e_region, [-1, 0, -1, 0])
+
+
+def test_a():
+    a_b = [tr.pi/4, tr.pi/2]
+
+    # ray intersects all planes once (negative crossing)
+    xs = [(-1, 1, 0)]
+    rays = [(1, 0, 0)]
+    a_t, a_region = a_torch(a_b, xs, rays)[:2]
+    assert check(a_t, [2, 1])
+    assert check(a_region, [-1, 0])
+
+    # ray intersects all planes once (positive crossing)
+    xs = [(-1, 1, 0)]
+    rays = [(-1, 0, 0)]
+    a_t, a_region = a_torch(a_b, xs, rays)[:2]
+    assert check(a_t, [-2, -1])
+    assert check(a_region, [0, -1])
+
+    # ray intersects no planes
+    xs = [(-1, -1, 0)]
+    rays = [(1, 0, 0)]
+    a_t, a_region = a_torch(a_b, xs, rays)[:2]
+    assert check(a_t, [float('inf'), float('inf')])
+
+    # ray parallel to plane
+    xs = [(0, 1, 0)]
+    rays = [(1, 0, 0)]
+    a_t, a_region = a_torch([0], xs, rays)[:2]
+    assert check(a_t.abs(), [float('inf')])
+
+    # ray through origin
+    xs = [(-1, 0, 0)]
+    rays = [(1, 0, 0)]
+    a_t, a_region = a_torch(a_b, xs, rays)[:2]
+    assert check(a_t, [1, 1])
+    assert check(a_region, [-1, 0])
+
+    # ray on plane
+    xs = [(0, 1, 0)]
+    rays = [(0, -1, 0)]
+    a_t, a_region = a_torch([tr.pi/2], xs, rays)[:2]
+    # FIXME:
+    # assert check(a_t, [1, 1])
+    # assert check(a_region, [1, 0])
+
+
+
+def test_find_starts():
+    grid = SphericalGrid(shape=(5, 5, 1))
+    s = find_starts(grid, [0, 0, 100])
+    assert check(s, [-1, 0, 0])
+    s = find_starts(grid, [0, 0, -100])
+    assert check(s, [-1, 4, 0])
+
+    grid = SphericalGrid(shape=(5, 5, 5))
+    s = find_starts(grid, [100, 0, 0])
+    assert check(s, [-1, 2, 2])
