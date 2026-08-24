@@ -82,7 +82,7 @@ from .loss import RelError
 #     def __radd__(self, other):
 #         return self.__add__(other)
 
-def image_stack(images, geom=None, ax=None, colorbar=False, polar=None, **kwargs):
+def image_stack(images, geom=None, ax=None, colorbar=False, polar=None, title=None, **kwargs):
     """Animate a stack of images
 
     Args:
@@ -94,6 +94,7 @@ def image_stack(images, geom=None, ax=None, colorbar=False, polar=None, **kwargs
         ax (matplotlib Axes, optional): existing Axes object to use
         colorbar (bool): include a colorbar
         polar (bool): override polar plot detection
+        title (str or None): axes title
         **kwargs: arguments to pass to plot
 
     Returns:
@@ -105,10 +106,11 @@ def image_stack(images, geom=None, ax=None, colorbar=False, polar=None, **kwargs
     if polar is None:
         polar = ispolar(geom) or (isiterable(geom) and ispolar(geom[0]))
     if ax is None:
-        fig = plt.figure(figsize=(3, 3))
+        fig = plt.figure(figsize=(3, 3), dpi=150)
         ax = fig.add_subplot(polar=polar)
     else:
         fig = ax.figure
+    ax.set_title(title)
 
     # detach from GPU if necessary
     if isinstance(images, tr.Tensor):
@@ -300,18 +302,20 @@ def preview3d(x, grid, shape=(256, 256), orbit=True, elev=60, azim=0, device='cp
         return op(rotvol)
 
 
-def loss_plot(losses, ax=None):
+def loss_plot(losses, ax=None, title='Loss'):
     """Plot losses from glide.science.recon.gd()
 
     Args:
         losses (dict[list]): loss history for each loss function provided to gd()
         ax (matplotlib Axes, optional): use existing axes
+        title (str or None): axes title
 
     returns:
         matplotlib Figure
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(5, 3), dpi=150)
+    ax.set_title(title)
     sax = ax.twinx()
 
     for loss_fn, loss in losses.items():
