@@ -113,9 +113,12 @@ def gd(f, y, model, coeffs=None, num_iterations=100,
 
             pbar.set_description(f'F:{f_stat:.1e} R:{r_stat:.1e} O:{o_stat*100:.0f}')
 
-            # save the reconstruction with the lowest loss
+            # save the reconstruction with the lowest loss.  the snapshot must be
+            # a clone: optim.step() updates coeffs in place, so a reference here
+            # would just track the running iterate
             if tot_loss < best_loss:
-                best_coeffs = coeffs
+                best_loss = detach_loss(tot_loss)
+                best_coeffs = coeffs.detach().clone()
 
             tot_loss.backward(retain_graph=True)
 
