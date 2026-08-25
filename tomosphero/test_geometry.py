@@ -118,10 +118,3 @@ def test_viewgeom():
     )
     # generate wireframe
     g._wireframe
-
-    g = ViewGeom(
-        ray_starts=ray_starts,
-        ray_ends=tr.rand_like(ray_starts)
-    )
-    # generate wireframe
-    g._wireframe

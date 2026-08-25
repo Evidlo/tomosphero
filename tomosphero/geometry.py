@@ -195,8 +195,8 @@ class SphericalGrid:
         # when timeunit is set) survive; torch cannot ingest datetime64 directly
         self.t = tr.asarray(
             np.asarray(t).astype('float64')
-        ).to(tr.int64) if t is not None else None
-        """t (tensor[int]): sample times"""
+        ) if t is not None else None
+        """t (tensor[float]): sample times"""
         self.r = r
         """r (tensor[float]): radial bin centers"""
         self.e = e
@@ -309,7 +309,7 @@ class SphericalGrid:
     @property
     def nptime(self):
         """ndarray[datetime64]: Return times as Numpy datetime"""
-        return self.t.numpy().astype(f'datetime64[{self.timeunit}]')
+        return self.t.numpy().astype('int64').astype(f'datetime64[{self.timeunit}]')
 
     # @property
     # def shape(self):
