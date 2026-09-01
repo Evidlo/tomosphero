@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import numpy as np
 import torch as tr
 
 from .test_raytracer import check
@@ -53,6 +54,62 @@ def test_sphericalgrid_dynamic():
         assert type(x) is tr.Tensor
 
     assert grid.mesh.ndim == 5, "Invalid mesh dimensions"
+
+def test_sphericalgrid_resample():
+    # static: rebin, then reclip
+    grid = SphericalGrid(
+        shape=(10, 11, 12), size_r=(3, 25), spacing='log',
+    )
+    g = grid.resample(shape=(20, 11, 12))
+    assert g.shape == (20, 11, 12) and not g.dynamic
+    assert g.size == grid.size and g.spacing == grid.spacing
+    g = grid.resample(size_r=(3, 15))
+    assert g.shape == grid.shape and g.size.r == (3, 15)
+
+    # dynamic: a spatial-only resample keeps the sample times
+    dates = np.arange('2026-03-01', '2026-03-05', dtype='datetime64[h]')
+    grid = SphericalGrid(
+        t=dates, timeunit='h',
+        r_b=tr.linspace(3, 25, 11),
+        e_b=tr.linspace(0, tr.pi, 12),
+        a_b=tr.linspace(-tr.pi, tr.pi, 13),
+    )
+    g = grid.resample(shape=(len(dates), 20, 11, 12))
+    assert g.shape == (len(dates), 20, 11, 12)
+    assert all(g.t == grid.t), "sample times not carried over"
+    assert g.timeunit == grid.timeunit
+
+    # a new time bin count drops them, respacing over the same extent
+    g = grid.resample(shape=(5, 10, 11, 12))
+    assert g.shape == (5, 10, 11, 12)
+    assert g.size.t == grid.size.t
+    assert g.t[0] == grid.t[0] and g.t[-1] == grid.t[-1]
+
+    # explicit times set the time axis and its length
+    g = grid.resample(t=dates[::2])
+    assert g.shape == (len(dates) // 2, 10, 11, 12)
+    assert all(g.t == tr.asarray(dates[::2].astype('float64')))
+
+    # an explicit t wins over shape's time bin count
+    g = grid.resample(t=dates[::2], shape=(99, 5, 6, 7))
+    assert g.shape == (len(dates) // 2, 5, 6, 7)
+
+    # times can be added to a static grid, and dropped from a dynamic one
+    assert SphericalGrid(
+        shape=(10, 11, 12),
+    ).resample(t=dates).shape == (len(dates), 10, 11, 12)
+    assert not grid.static.resample(shape=(10, 11, 12)).dynamic
+
+    # explicit boundaries supersede shape
+    g = grid.resample(r_b=[1, 2, 3], e_b=[1, 2, 3], a_b=[1, 2, 3, 4])
+    assert g.shape == (len(dates), 2, 2, 3)
+
+    # datetime samples on the shape path set size_t, so a temporal resample spans them
+    grid = SphericalGrid(shape=(len(dates), 10, 11, 12), t=dates, timeunit='h')
+    assert grid.size.t == (float(grid.t[0]), float(grid.t[-1]))
+    g = grid.resample(shape=(2, 10, 11, 12))
+    assert (g.t[0], g.t[-1]) == (grid.t[0], grid.t[-1])
+
 
 def test_conerectgeom():
     g = ConeRectGeom((11, 11), (4, 0, 1), fov=(23, 45))

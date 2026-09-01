@@ -130,6 +130,11 @@ class SphericalGrid:
         else:
             raise ValueError("shape must be 3D or 4D")
 
+        # np.asarray(...).astype('float64') so datetime64 samples (the usual case
+        # when timeunit is set) survive; torch cannot ingest datetime64 directly
+        if t is not None:
+            t = tr.asarray(np.asarray(t).astype('float64'))
+
         # FIXME: deprecated arguments: phis_b, thetas_b, rs_b
         if (rs_b is not None) and (phis_b is not None) and (thetas_b is not None):
             r_b, e_b, a_b = rs_b, phis_b, thetas_b
@@ -144,8 +149,7 @@ class SphericalGrid:
                 shape = StaticShape(len(r_b) - 1, len(e_b) - 1, len(a_b) - 1)
                 size = StaticSize(size_r, size_e, size_a)
             else:
-                size_t = float(min(t)), float(max(t))
-                t = tr.asarray(t, dtype=tr.float64)
+                size_t = float(t.min()), float(t.max())
                 shape = DynamicShape(len(t), len(r_b) - 1, len(e_b) - 1, len(a_b) - 1)
                 size = DynamicSize(size_t, size_r, size_e, size_a)
                 dynamic = True
@@ -159,6 +163,9 @@ class SphericalGrid:
         elif (shape is not None) and (size is not None):
             if len(shape) == 4 and t is None:
                 t = tr.linspace(size.t[0], size.t[1], shape.t, dtype=tr.float64)
+            elif len(shape) == 4:
+                # explicit samples define the temporal extent
+                size = DynamicSize((float(t.min()), float(t.max())), size_r, size_e, size_a)
             if spacing == 'log':
                 r_b = tr.logspace(math.log10(size.r[0]), math.log10(size.r[1]), shape.r + 1, dtype=tr.float64)
                 r = tr.sqrt(r_b[1:] * r_b[:-1])
@@ -191,11 +198,7 @@ class SphericalGrid:
         """e_b (tensor[float]): elevational bin boundaries"""
         self.a_b = a_b
         """a_b (tensor[float]): azimuthal bin boundaries"""
-        # np.asarray(...).astype('float64') so datetime64 samples (the usual case
-        # when timeunit is set) survive; torch cannot ingest datetime64 directly
-        self.t = tr.asarray(
-            np.asarray(t).astype('float64')
-        ) if t is not None else None
+        self.t = t
         """t (tensor[float]): sample times"""
         self.r = r
         """r (tensor[float]): radial bin centers"""
@@ -279,6 +282,40 @@ class SphericalGrid:
         grid.size = StaticSize(*self.size[-3:])
         grid.t = None
         return grid
+
+    def resample(self, **overrides):
+        """Resample a new grid, over the same spatiotemporal extent.
+
+        Args:
+            **overrides (dict): any `SphericalGrid` argument
+
+        Returns:
+            grid (SphericalGrid): resampled grid
+
+        Examples:
+        ``` python
+            # resample a grid's spatial resolution
+            grid.resample(shape=(grid.shape.t, 400, 45, 60))
+            # clip a grid's radial extent
+            grid.resample(size_r=(3, 15))
+            # change a grid's temporal sample times (which also changes the shape)
+            grid.resample(t=np.arange('2026-03-01', '2026-03-05', dtype='datetime64[h]'))
+        ```
+        """
+        # an explicit `t` fixes the time bin count, otherwise `shape` does
+        t = overrides.get('t', self.t)
+        shape = overrides.get('shape', self.shape)
+        shape = shape if 't' not in overrides else (len(t), *shape[-3:])
+
+        kwargs = {f'size_{k}': v for k, v in self.size._asdict().items()}
+        kwargs |= {'spacing': self.spacing, 'timeunit': self.timeunit}
+        kwargs |= overrides
+        # carried samples outlive a rebin, but not a new time bin count
+        kwargs |= {
+            'shape': shape,
+            't': t if t is not None and len(t) == shape[0] else None,
+        }
+        return SphericalGrid(**kwargs)
 
     @property
     def _coords(self) -> dict[str, tr.Tensor]:

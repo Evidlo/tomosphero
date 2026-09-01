@@ -1,3 +1,8 @@
+tomosphero - 0.0.4
+------------------
+- add `SphericalGrid.resample` for deriving a grid with any constructor argument replaced
+- `SphericalGrid` takes temporal extent from `t` when sample times are given
+
 tomosphero - 0.0.3
 ------------------
 - view geometries contain optional masks
